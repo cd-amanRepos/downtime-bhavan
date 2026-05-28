@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "next dev -p ${DTB_WEB_PORT:-3210}",
     "build": "next build",
-    "start": "next start -p ${DTB_WEB_PORT:-3210}",
+    "start": "next start -H 0.0.0.0 -p ${DTB_WEB_PORT:-3210}",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
