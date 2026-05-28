@@ -37,8 +37,8 @@ function LoginForm() {
           <h1 className="text-lg font-bold tracking-tight">Admin · Downtime Bhavan</h1>
         </div>
       </div>
-      <label className="block text-[11px] font-semibold uppercase tracking-[0.15em] text-[var(--color-ink-faint)] mb-1.5">Admin token</label>
-      <input type="password" value={token} onChange={(e) => setToken(e.target.value)}
+      <label htmlFor="admin-token" className="block text-[11px] font-semibold uppercase tracking-[0.15em] text-[var(--color-ink-faint)] mb-1.5">Admin token</label>
+      <input id="admin-token" type="password" value={token} onChange={(e) => setToken(e.target.value)}
              autoFocus required
              className="w-full border border-[var(--color-border-strong)] rounded-lg px-3 py-2.5 text-sm font-mono mb-3 bg-[var(--color-paper)]" />
       {error && <p className="text-xs text-[var(--color-red)] font-semibold mb-3">{error}</p>}

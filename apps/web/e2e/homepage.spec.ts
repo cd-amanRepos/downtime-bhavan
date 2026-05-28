@@ -109,3 +109,20 @@ test('departments: list shows all enabled sites + links to detail', async ({ pag
   await aadhaarLink.click();
   await expect(page.getByText(/All departments|Past 7 days/).first()).toBeVisible({ timeout: 5000 });
 });
+
+test('admin: unauth redirects to login', async ({ page }) => {
+  await page.goto('/admin/grievances');
+  await expect(page).toHaveURL(/\/admin\/login/);
+});
+
+test('admin: wrong token shows error, right token enters', async ({ page }) => {
+  await page.context().clearCookies();
+  await page.goto('/admin/login');
+  await page.getByLabel(/Admin token/i).fill('wrong-token');
+  await page.getByRole('button', { name: /Enter/i }).click();
+  await expect(page.getByText(/Wrong token/i)).toBeVisible();
+
+  await page.getByLabel(/Admin token/i).fill('dev-admin');
+  await page.getByRole('button', { name: /Enter/i }).click();
+  await expect(page.getByRole('heading', { name: /Overview/ })).toBeVisible({ timeout: 5_000 });
+});
