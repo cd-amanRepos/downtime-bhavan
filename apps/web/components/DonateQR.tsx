@@ -6,24 +6,27 @@ import QRCode from 'qrcode';
 interface Props {
   upiId: string;
   amountInr?: number;  // optional pre-filled amount (V1 leaves it blank for user choice)
+  imagePath?: string;  // if set, use this static image instead of generating
 }
 
-/** Renders a UPI deep-link QR code client-side. Reading the QR with any UPI
- *  app (GPay, PhonePe, Paytm, BHIM) opens the payment flow pre-filled with
- *  the recipient UPI ID. */
-export function DonateQR({ upiId, amountInr }: Props) {
+/** Renders a UPI QR code. When `imagePath` is provided, uses the static image
+ *  (e.g. /donate-qr.jpeg) — useful for pre-branded QR codes from a UPI app's
+ *  share-QR feature. Otherwise generates a generic deep-link QR client-side.
+ *  Either way, scanning with any UPI app opens the payment flow. */
+export function DonateQR({ upiId, amountInr, imagePath }: Props) {
   const [dataUrl, setDataUrl] = useState<string>('');
   const [copied, setCopied] = useState(false);
 
   const upiLink = `upi://pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent('Downtime Bhavan')}&cu=INR${amountInr ? `&am=${amountInr}` : ''}`;
 
   useEffect(() => {
+    if (imagePath) return;  // static image — skip generation
     QRCode.toDataURL(upiLink, {
       width: 280,
       margin: 1,
       color: { dark: '#0E1B2D', light: '#FFFFFF' },
     }).then(setDataUrl).catch(console.error);
-  }, [upiLink]);
+  }, [upiLink, imagePath]);
 
   async function copyUpi() {
     try {
@@ -33,11 +36,13 @@ export function DonateQR({ upiId, amountInr }: Props) {
     } catch { /* clipboard blocked */ }
   }
 
+  const qrSrc = imagePath ?? dataUrl;
+
   return (
     <div className="bg-[var(--color-paper)] border border-[var(--color-border)] rounded-2xl p-6 max-w-[420px] mx-auto text-center">
       <div className="flex justify-center mb-4">
-        {dataUrl
-          ? <img src={dataUrl} alt="UPI QR code" className="rounded-lg" />
+        {qrSrc
+          ? <img src={qrSrc} alt="UPI QR code for Downtime Bhavan donations" className="rounded-lg max-w-[280px] w-full h-auto" />
           : <div className="w-[280px] h-[280px] bg-[var(--color-paper-2)] rounded-lg" />
         }
       </div>

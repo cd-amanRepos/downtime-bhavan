@@ -1,7 +1,26 @@
 import { PageShell } from '@/components/PageShell';
 import { DonateQR } from '@/components/DonateQR';
+import { buildMetadata } from '@/lib/seo/metadata';
+import { JsonLd } from '@/components/JsonLd';
+import {
+  buildBreadcrumbSchema,
+  buildDonateActionSchema,
+} from '@/lib/seo/schema';
+import { SITE_URL } from '@/lib/seo/constants';
 
-export const metadata = { title: 'Donate · Downtime Bhavan' };
+export const metadata = buildMetadata({
+  title: 'Donate · keep the unofficial observatory free for citizens',
+  description: 'Downtime Bhavan runs on donations. UPI for Indian donors. Funds keep WhatsApp alerts free as the subscriber base grows.',
+  path: '/donate',
+});
+
+const jsonLd: object[] = [
+  buildBreadcrumbSchema([
+    { name: 'Home', url: SITE_URL },
+    { name: 'Donate', url: `${SITE_URL}/donate` },
+  ]),
+  buildDonateActionSchema(),
+];
 
 export default function Page() {
   const upiId = process.env.DTB_UPI_ID ?? 'downtimebhavan@oksbi';
@@ -9,6 +28,7 @@ export default function Page() {
 
   return (
     <PageShell active="status" maxWidth={760}>
+      <JsonLd data={jsonLd} />
       <div className="text-center mb-10">
         <span className="inline-flex items-center gap-2 text-[10.5px] font-semibold text-[var(--color-saffron)] tracking-[0.18em] uppercase mb-3">
           <span>☕</span>
@@ -19,12 +39,13 @@ export default function Page() {
           <em className="text-[var(--color-blue)] font-semibold" style={{ fontFamily: 'var(--font-serif)' }}>fund the continuation.</em>
         </h1>
         <p className="text-base text-[var(--color-ink-dim)] mt-4 max-w-[520px] mx-auto leading-relaxed">
-          This office runs on chai and citizen donations. Every ₹ pays the WhatsApp send cost
-          for the next batch of alerts and keeps the site free, ad-free, and open source.
+          This office runs on chai and citizen donations. Every ₹ pays for the
+          server, the domain, the email sender, and the time of the citizen
+          running it. In return: no ads, no data sold, no sponsor steering the data.
         </p>
       </div>
 
-      <DonateQR upiId={upiId} />
+      <DonateQR upiId={upiId} imagePath="/donate-qr.jpeg" />
 
       {ghSponsors && (
         <div className="text-center mt-6">
@@ -37,22 +58,44 @@ export default function Page() {
 
       <hr className="my-10 border-[var(--color-border)]" />
 
-      <div className="bg-[var(--color-paper)] border border-[var(--color-border)] rounded-2xl p-6">
+      <div className="bg-[var(--color-amber-soft)]/40 border border-[var(--color-amber-soft)] rounded-2xl p-6">
+        <h2 className="text-base font-bold mb-3 text-[var(--color-amber)]">Honest note</h2>
+        <p className="text-sm text-[var(--color-ink-soft)] leading-relaxed mb-3">
+          <b>This is not a registered non-profit.</b> Donations land in a personal UPI
+          operated by the citizen running this site. They pay for the infrastructure
+          (Fly.io VM + domain + email API) <em>and</em> compensate that person's time.
+        </p>
+        <p className="text-sm text-[var(--color-ink-soft)] leading-relaxed mb-3">
+          What you get for the chai money:
+        </p>
+        <ul className="space-y-1 text-sm text-[var(--color-ink-soft)] ml-4">
+          <li>● No advertising, ever.</li>
+          <li>● No data sold or shared with anyone.</li>
+          <li>● No sponsor influence on which sites we track or how we measure.</li>
+          <li>● The code stays open source (AGPL-3.0) — audit it any time.</li>
+        </ul>
+        <p className="text-sm text-[var(--color-ink-soft)] leading-relaxed mt-3">
+          If donations grow past the threshold where 80G tax-deduction certification
+          starts mattering, we'll register a Section 8 entity and migrate properly.
+          Until then: personal UPI, declared income, plain accounting.
+        </p>
+      </div>
+
+      <div className="bg-[var(--color-paper)] border border-[var(--color-border)] rounded-2xl p-6 mt-6">
         <h2 className="text-base font-bold mb-3 text-[var(--color-blue)]">Transparency</h2>
         <ul className="space-y-2 text-sm text-[var(--color-ink-soft)]">
-          <li>• <b>This month:</b> ₹0 raised, ₹0 spent</li>
-          <li>• <b>WhatsApp messages:</b> 0 / 1,000 free (free tier resets monthly)</li>
+          <li>• <b>This month:</b> ₹0 raised, ~₹500 spent (server + domain + email)</li>
+          <li>• <b>Email sends:</b> covered by Resend's free tier (3,000/month)</li>
           <li>• <b>Monthly recurring cost:</b> ~₹400 (Fly.io VM) + ~₹70 (domain prorated)</li>
-          <li>• <b>Donations track:</b> manual reconciliation. Public donor wall coming if anyone gives big.</li>
+          <li>• <b>Donations track:</b> manual ledger at /admin. Public donor wall coming if anyone gives big.</li>
         </ul>
         <p className="mt-4 text-xs text-[var(--color-ink-faint)] italic">
-          We don't take donations through any intermediary (no Razorpay, no Patreon).
-          Direct UPI = 0% fees. 100% reaches the project.
+          UPI is direct — no Razorpay, no Patreon, no platform fees. What you send is what arrives.
         </p>
       </div>
 
       <p className="mt-8 text-center text-xs text-[var(--color-ink-faint)]">
-        Citizens-funded · zero ads · AGPL-3.0
+        Citizen-operated · zero ads · AGPL-3.0
       </p>
     </PageShell>
   );
