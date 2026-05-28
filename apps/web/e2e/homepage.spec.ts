@@ -76,3 +76,36 @@ test('janta darbar: same-here reaction toggles count', async ({ page, request })
   const after = await sameBtn.innerText();
   expect(after).not.toBe(initial);
 });
+
+test('nav: all header links resolve to real pages', async ({ page }) => {
+  const targets: Array<[string, RegExp]> = [
+    ['Status',        /Department Status|Department Register/],
+    ['Janta Darbar',  /Janta Darbar/],
+    ['Leaderboard',   /Worst Performing/],
+    ['Methodology',   /How we know|Where we check/],
+    ['API',           /Read-only endpoints/],
+  ];
+  for (const [link, expected] of targets) {
+    await page.goto('/');
+    await page.getByRole('navigation').getByText(link, { exact: true }).first().click();
+    await expect(page.locator('body')).toContainText(expected);
+  }
+});
+
+test('footer: donate page loads with UPI ID', async ({ page }) => {
+  await page.goto('/donate');
+  await expect(page.getByText(/Office of the Chai Fund/)).toBeVisible();
+  await expect(page.getByText(/UPI ID/i).first()).toBeVisible();
+  // The default UPI fallback is shown when env is unset:
+  await expect(page.getByText(/@oksbi|@/)).toBeVisible();
+});
+
+test('departments: list shows all enabled sites + links to detail', async ({ page }) => {
+  await page.goto('/departments');
+  await expect(page.getByRole('heading', { name: /Department Register/ })).toBeVisible();
+  await expect(page.getByText(/Aadhaar/)).toBeVisible();
+  // Click into the first site row
+  const aadhaarLink = page.getByRole('link', { name: /Aadhaar/ }).first();
+  await aadhaarLink.click();
+  await expect(page.getByText(/All departments|Past 7 days/).first()).toBeVisible({ timeout: 5000 });
+});
