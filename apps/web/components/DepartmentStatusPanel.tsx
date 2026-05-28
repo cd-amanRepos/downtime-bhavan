@@ -65,9 +65,9 @@ export async function DepartmentStatusPanel() {
         {snapshots.map((s) => <StatusItem key={s.siteId} snapshot={s} />)}
       </div>
 
-      <div className="px-7 py-3.5 text-center text-[11.5px] text-[var(--color-blue)] font-semibold cursor-pointer bg-[var(--color-paper)] border-t border-[var(--color-border)] hover:bg-[var(--color-blue-soft)]">
+      <a href="/departments" className="block px-7 py-3.5 text-center text-[11.5px] text-[var(--color-blue)] font-semibold bg-[var(--color-paper)] border-t border-[var(--color-border)] hover:bg-[var(--color-blue-soft)]">
         View all {snapshots.length} departments →
-      </div>
+      </a>
     </section>
   );
 }
