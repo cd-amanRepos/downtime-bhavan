@@ -9,14 +9,14 @@ interface Props {
   onClose: () => void;
 }
 
-type Step = 'phone' | 'otp' | 'done';
+type Step = 'email' | 'otp' | 'done';
 
 export function NotifyFlow({ sites, initialSiteId, onClose }: Props) {
-  const [step, setStep] = useState<Step>('phone');
+  const [step, setStep] = useState<Step>('email');
   const [siteId, setSiteId] = useState(initialSiteId ?? sites[0]?.id ?? '');
-  const [phone, setPhone] = useState('');
+  const [email, setEmail] = useState('');
   const [otp, setOtp] = useState('');
-  const [maskedPhone, setMaskedPhone] = useState('');
+  const [maskedContact, setMaskedContact] = useState('');
   const [siteName, setSiteName] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
@@ -29,12 +29,13 @@ export function NotifyFlow({ sites, initialSiteId, onClose }: Props) {
       const res = await fetch('/api/notify/request', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone, siteId }),
+        body: JSON.stringify({ contact: email, siteId, kind: 'email' }),
       });
       const data = await res.json();
       if (!res.ok) {
         setError(
-          data.error === 'invalid_phone' ? 'Please enter a valid Indian mobile number.'
+          data.error === 'invalid_email' ? 'Please enter a valid email address.'
+          : data.error === 'invalid_phone' ? 'Please enter a valid Indian mobile number.'
           : data.error === 'rate_limited' ? 'You are sending too many requests. Wait a minute.'
           : data.error === 'too_many_otps' ? 'Too many OTP requests for this number. Try again in an hour.'
           : data.error === 'max_alerts_reached' ? `You already have ${data.max} active alerts. Cancel one first.`
@@ -42,7 +43,7 @@ export function NotifyFlow({ sites, initialSiteId, onClose }: Props) {
           : `Failed: ${data.error ?? res.status}`
         );
       } else {
-        setMaskedPhone(data.maskedPhone);
+        setMaskedContact(data.maskedContact);
         setSiteName(sites.find(s => s.id === siteId)?.name ?? '');
         setStep('otp');
       }
@@ -61,7 +62,7 @@ export function NotifyFlow({ sites, initialSiteId, onClose }: Props) {
       const res = await fetch('/api/notify/verify', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone, otp }),
+        body: JSON.stringify({ contact: email, otp, kind: 'email' }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -86,17 +87,17 @@ export function NotifyFlow({ sites, initialSiteId, onClose }: Props) {
       <div className="bg-[var(--color-paper)] rounded-2xl p-7 max-w-[440px] w-full shadow-[0_20px_60px_-12px_rgba(15,31,95,0.5)]">
         <div className="flex justify-between items-baseline mb-1">
           <h2 className="text-xl font-bold tracking-tight">
-            {step === 'phone' && 'Set a WhatsApp alert'}
+            {step === 'email' && 'Set an email alert'}
             {step === 'otp' && 'Enter the code'}
             {step === 'done' && 'Alert is live ✓'}
           </h2>
           <button type="button" onClick={onClose} className="text-[var(--color-ink-faint)] hover:text-[var(--color-ink)] text-sm" aria-label="Close">✕</button>
         </div>
 
-        {step === 'phone' && (
+        {step === 'email' && (
           <form onSubmit={requestOtp}>
             <p className="text-sm text-[var(--color-ink-dim)] mb-5">
-              We'll send a one-time code to your WhatsApp number. Indian (+91) numbers only for V1.
+              We'll email you a one-time code. Any working email address works.
             </p>
             <label className="block text-[11px] font-semibold uppercase tracking-[0.15em] text-[var(--color-ink-faint)] mb-1.5">Department</label>
             <select value={siteId} onChange={(e) => setSiteId(e.target.value)} required
@@ -104,12 +105,11 @@ export function NotifyFlow({ sites, initialSiteId, onClose }: Props) {
               {sites.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
             </select>
 
-            <label className="block text-[11px] font-semibold uppercase tracking-[0.15em] text-[var(--color-ink-faint)] mb-1.5">WhatsApp number</label>
+            <label className="block text-[11px] font-semibold uppercase tracking-[0.15em] text-[var(--color-ink-faint)] mb-1.5">Email address</label>
             <div className="flex gap-2 mb-4">
-              <span className="inline-flex items-center px-3 bg-[var(--color-paper-2)] border border-[var(--color-border-strong)] rounded-lg text-sm font-mono">+91</span>
-              <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} required autoFocus
-                     placeholder="98765 43210" inputMode="numeric"
-                     className="flex-1 border border-[var(--color-border-strong)] rounded-lg px-3 py-2.5 text-sm font-mono bg-[var(--color-paper)]" />
+              <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required autoFocus
+                     placeholder="you@example.com"
+                     className="flex-1 border border-[var(--color-border-strong)] rounded-lg px-3 py-2.5 text-sm bg-[var(--color-paper)]" />
             </div>
 
             {error && <div className="text-xs text-[var(--color-red)] font-semibold mb-3">{error}</div>}
@@ -130,7 +130,7 @@ export function NotifyFlow({ sites, initialSiteId, onClose }: Props) {
         {step === 'otp' && (
           <form onSubmit={verifyOtp}>
             <p className="text-sm text-[var(--color-ink-dim)] mb-1">
-              Sent a 6-digit code to <b className="text-[var(--color-ink)] font-mono">{maskedPhone}</b>.
+              Sent a 6-digit code to <b className="text-[var(--color-ink)] font-mono">{maskedContact}</b>.
             </p>
             <p className="text-xs text-[var(--color-ink-faint)] mb-5">For <b className="text-[var(--color-ink-soft)]">{siteName}</b>. Code expires in 10 minutes.</p>
 
@@ -143,9 +143,9 @@ export function NotifyFlow({ sites, initialSiteId, onClose }: Props) {
             {error && <div className="text-xs text-[var(--color-red)] font-semibold mb-3">{error}</div>}
 
             <div className="flex gap-2 justify-between items-center">
-              <button type="button" onClick={() => { setStep('phone'); setOtp(''); }}
+              <button type="button" onClick={() => { setStep('email'); setOtp(''); }}
                       className="text-xs text-[var(--color-ink-faint)] hover:text-[var(--color-ink)] font-semibold">
-                ← Change number
+                ← Change email
               </button>
               <button type="submit" disabled={busy || otp.length !== 6}
                       className="px-5 py-2.5 bg-[var(--color-blue)] text-white text-sm font-bold rounded-lg hover:bg-[var(--color-blue-deep)] disabled:opacity-50">
@@ -160,7 +160,7 @@ export function NotifyFlow({ sites, initialSiteId, onClose }: Props) {
             <div className="text-5xl mb-4">🔔</div>
             <p className="text-base font-semibold mb-2">You're on the list.</p>
             <p className="text-sm text-[var(--color-ink-dim)] mb-6">
-              We'll WhatsApp <b className="font-mono">{maskedPhone}</b> the moment <b>{siteName}</b> starts working again. Reply <b>STOP</b> any time to cancel all alerts.
+              We'll <b>email</b> <b className="font-mono">{maskedContact}</b> the moment <b>{siteName}</b> starts working again. To stop alerts, visit /delete-my-data.
             </p>
             <button onClick={onClose}
                     className="px-5 py-2.5 bg-[var(--color-blue)] text-white text-sm font-bold rounded-lg hover:bg-[var(--color-blue-deep)]">
