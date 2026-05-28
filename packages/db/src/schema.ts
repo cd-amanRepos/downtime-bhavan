@@ -123,3 +123,49 @@ export const donations = sqliteTable('donations', {
   receivedAt: integer('received_at').notNull(),
   note: text('note'),
 });
+
+/**
+ * WhatsApp downtime alert subscriptions. Phone numbers are stored as an
+ * HMAC-SHA256 hash (for dedup/lookup) and AES-256-GCM ciphertext (for
+ * delivery). Status lifecycle: pending_otp → active → triggered/cancelled.
+ */
+export const subscriptions = sqliteTable(
+  'subscriptions',
+  {
+    id: integer('id').primaryKey({ autoIncrement: true }),
+    siteId: text('site_id').notNull().references(() => sites.id),
+    phoneHash: text('phone_hash').notNull(),
+    phoneCiphertext: text('phone_ciphertext'),
+    status: text('status', {
+      enum: ['pending_otp', 'active', 'triggered', 'cancelled', 'failed', 'deleted'],
+    }).notNull().default('pending_otp'),
+    createdAt: integer('created_at').notNull(),
+    activatedAt: integer('activated_at'),
+    triggeredAt: integer('triggered_at'),
+  },
+  (t) => ({
+    siteStatusIdx: index('idx_subs_site_status').on(t.siteId, t.status),
+    phoneIdx: index('idx_subs_phone').on(t.phoneHash),
+  }),
+);
+
+/**
+ * OTP attempts for signup and delete-my-data flows. Code stored as
+ * bcrypt/argon2 hash; expires after 10 minutes; `used` flag prevents replay.
+ */
+export const otpAttempts = sqliteTable(
+  'otp_attempts',
+  {
+    id: integer('id').primaryKey({ autoIncrement: true }),
+    phoneHash: text('phone_hash').notNull(),
+    codeHash: text('code_hash').notNull(),
+    purpose: text('purpose', { enum: ['notify_signup', 'delete_data'] }).notNull(),
+    expiresAt: integer('expires_at').notNull(),
+    used: integer('used', { mode: 'boolean' }).notNull().default(false),
+    ipHash: text('ip_hash'),
+    createdAt: integer('created_at').notNull(),
+  },
+  (t) => ({
+    phoneTimeIdx: index('idx_otp_phone_time').on(t.phoneHash, t.createdAt),
+  }),
+);
