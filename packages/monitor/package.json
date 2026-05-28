@@ -1,0 +1,20 @@
+{
+  "name": "@dtb/monitor",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "dev": "tsx watch src/index.ts",
+    "start": "tsx src/index.ts"
+  },
+  "dependencies": {
+    "@dtb/db": "*",
+    "@dtb/shared": "*"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.0"
+  }
+}
