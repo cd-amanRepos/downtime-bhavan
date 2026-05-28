@@ -1,4 +1,9 @@
 # fly.toml — Downtime Bhavan
+#
+# Single-machine model: one VM in Mumbai with the persistent volume mounted,
+# running BOTH web (Next.js) and monitor (tick daemon) inside the same
+# container. This is required because Fly volumes can't be shared across
+# machines, and we need both processes hitting the same SQLite file.
 
 app = "downtime-bhavan"
 primary_region = "bom"      # Mumbai
@@ -17,28 +22,14 @@ primary_region = "bom"      # Mumbai
   source = "dtb_data"
   destination = "/data"
 
-[processes]
-  web = "/docker-entrypoint.sh"
-  monitor = "/docker-entrypoint.sh"
-
-[[services]]
-  processes = ["web"]
+[http_service]
   internal_port = 3210
-  protocol = "tcp"
+  force_https = true
   auto_stop_machines = false
-  auto_start_machines = true
+  auto_start_machines = false
   min_machines_running = 1
 
-  [[services.ports]]
-    port = 80
-    handlers = ["http"]
-    force_https = true
-
-  [[services.ports]]
-    port = 443
-    handlers = ["tls", "http"]
-
-  [services.concurrency]
+  [http_service.concurrency]
     type = "connections"
     hard_limit = 250
     soft_limit = 200
@@ -46,4 +37,3 @@ primary_region = "bom"      # Mumbai
 [[vm]]
   size = "shared-cpu-1x"
   memory = "512mb"
-  processes = ["web", "monitor"]
