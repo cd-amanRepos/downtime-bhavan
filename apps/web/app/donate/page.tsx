@@ -23,7 +23,10 @@ const jsonLd: object[] = [
 ];
 
 export default function Page() {
-  const upiId = process.env.DTB_UPI_ID ?? 'downtimebhavan@oksbi';
+  // UPI ID is public info (it's printed on this page), so hardcoding the
+  // current handle as the default is fine. Production overrides via the
+  // DTB_UPI_ID Fly secret if/when the handle rotates.
+  const upiId = process.env.DTB_UPI_ID ?? 'downtimebhavan@axl';
   const ghSponsors = process.env.DTB_GH_SPONSORS;
 
   return (
