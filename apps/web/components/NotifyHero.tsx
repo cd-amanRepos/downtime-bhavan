@@ -60,6 +60,106 @@ export function NotifyHero() {
           ))}
         </div>
       </div>
+
+      <ComingSoonMarquee />
+      <DonateNudge />
+
     </section>
+  );
+}
+
+const UPCOMING_SITES = [
+  'EPFO Member Portal',
+  'GST Portal',
+  'Income Tax e-Filing',
+  'Passport Seva',
+  'DigiLocker',
+  'Vahan / Sarathi',
+  'MCA Portal',
+  'eShram',
+  'National Scholarship Portal',
+  'PMJAY · Ayushman Bharat',
+  'CBSE Results',
+] as const;
+
+function ComingSoonMarquee() {
+  // duplicate the list so the keyframe animation can loop seamlessly
+  const loop = [...UPCOMING_SITES, ...UPCOMING_SITES];
+  return (
+    <div className="relative z-10 mt-2 border-t border-[var(--color-border)]">
+      <div className="max-w-[760px] mx-auto px-14 pt-8 pb-5 text-center">
+        <div className="inline-flex items-center gap-2.5 text-[10.5px] font-semibold text-[var(--color-ink-faint)] tracking-[0.18em] uppercase mb-4">
+          <span className="w-6 h-px bg-[var(--color-border-strong)]" />
+          <span>
+            Upcoming Departments
+            <span className="text-[var(--color-saffron)] font-bold mx-2">·</span>
+            <span className="text-[var(--color-ink-soft)]">11 more arriving</span>
+          </span>
+          <span className="w-6 h-px bg-[var(--color-border-strong)]" />
+        </div>
+      </div>
+
+      {/* Marquee — full-bleed for nicer edge fade */}
+      <div className="marquee relative overflow-hidden mx-6 pb-6">
+        {/* Soft edge fades on left + right */}
+        <span aria-hidden className="pointer-events-none absolute left-0 top-0 bottom-0 w-16 bg-gradient-to-r from-[var(--color-bg)] to-transparent z-10" />
+        <span aria-hidden className="pointer-events-none absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-[var(--color-bg)] to-transparent z-10" />
+
+        <div className="marquee-track flex gap-3 w-max">
+          {loop.map((name, i) => (
+            <span
+              key={`${name}-${i}`}
+              className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-[var(--color-paper)] border border-[var(--color-border)] rounded-full whitespace-nowrap text-[12.5px] font-semibold text-[var(--color-ink-soft)] shadow-[0_1px_2px_rgba(15,31,95,0.04)]"
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-saffron)]" />
+              {name}
+              <span className="text-[10px] font-bold text-[var(--color-saffron)] uppercase tracking-[0.1em]">soon</span>
+            </span>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function DonateNudge() {
+  return (
+    <div className="relative z-10 border-t border-[var(--color-border)] bg-gradient-to-b from-transparent to-[var(--color-blue-soft)]/30">
+      <div className="max-w-[640px] mx-auto px-14 py-10 text-center">
+        <div className="inline-flex items-center gap-2 text-[10.5px] font-semibold text-[var(--color-saffron)] tracking-[0.18em] uppercase mb-3">
+          <span>☕</span>
+          <span>Office of the Chai Fund</span>
+        </div>
+
+        <p className="text-[19px] font-semibold tracking-tight text-[var(--color-ink)] leading-snug">
+          If you liked the work and want me to <em className="text-[var(--color-blue)] font-semibold" style={{ fontFamily: 'var(--font-serif)', fontStyle: 'italic' }}>continue</em>.
+        </p>
+        <p className="mt-2 text-sm text-[var(--color-ink-dim)] leading-relaxed max-w-[480px] mx-auto">
+          This office runs on chai and citizen donations. Every ₹ funds the next 11 departments — and keeps it free, ad-free, open source.
+        </p>
+
+        <div className="mt-6 flex items-center justify-center gap-3 flex-wrap">
+          <a
+            href="/donate"
+            className="inline-flex items-center gap-2 bg-[var(--color-blue)] text-white px-5 py-3 rounded-[10px] text-[13.5px] font-bold shadow-[0_2px_4px_rgba(15,31,95,0.18),_inset_0_1px_0_rgba(255,255,255,0.18)] hover:bg-[var(--color-blue-deep)] transition-all"
+          >
+            <span>₹</span>
+            Support via UPI
+          </a>
+          <a
+            href="/donate"
+            className="inline-flex items-center gap-2 bg-[var(--color-paper)] border border-[var(--color-border-strong)] text-[var(--color-ink-soft)] px-5 py-3 rounded-[10px] text-[13.5px] font-bold hover:border-[var(--color-saffron)] hover:text-[var(--color-saffron)] hover:bg-[var(--color-saffron-soft)] transition-all"
+          >
+            <span>☕</span>
+            Buy me chai
+          </a>
+        </div>
+
+        <p className="mt-5 text-[11px] text-[var(--color-ink-faint)] font-medium tracking-wide">
+          <span className="text-[var(--color-green)] font-semibold">●</span>{' '}
+          Free, ad-free, open source · ₹0 raised this month
+        </p>
+      </div>
+    </div>
   );
 }
