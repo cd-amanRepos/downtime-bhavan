@@ -111,3 +111,15 @@ export const rateLimitAttempts = sqliteTable(
     pk: primaryKey({ columns: [t.action, t.ipHash, t.slotMinute] }),
   }),
 );
+
+/**
+ * Manual donation ledger. V1 reconciliation: admin enters UPI/Razorpay/etc.
+ * receipts here. The /donate page shows aggregate transparency stats from this.
+ */
+export const donations = sqliteTable('donations', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  amountInr: real('amount_inr').notNull(),
+  source: text('source').notNull(),     // 'upi' | 'github_sponsors' | 'other'
+  receivedAt: integer('received_at').notNull(),
+  note: text('note'),
+});
