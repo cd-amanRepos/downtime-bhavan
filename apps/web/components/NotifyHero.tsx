@@ -1,9 +1,14 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { NotifyFlow } from './NotifyFlow';
 
-export function NotifyHero() {
+interface Site { id: string; name: string; }
+interface Props { sites: Site[]; }
+
+export function NotifyHero({ sites }: Props) {
   const fieldRef = useRef<HTMLInputElement>(null);
+  const [showFlow, setShowFlow] = useState(false);
 
   useEffect(() => {
     function onEsc(e: KeyboardEvent) {
@@ -39,7 +44,7 @@ export function NotifyHero() {
         </p>
 
         <form className="notify-form mt-10 bg-[var(--color-paper)] border border-[var(--color-border-strong)] rounded-2xl px-5.5 pl-5 py-2 flex items-center gap-2.5 shadow-[0_8px_24px_-12px_rgba(15,31,95,0.15),_0_2px_6px_-2px_rgba(15,31,95,0.08)]"
-              onSubmit={(e) => { e.preventDefault(); console.log('TODO: notify flow in Plan 3'); }}>
+              onSubmit={(e) => { e.preventDefault(); setShowFlow(true); }}>
           <span className="text-base text-[var(--color-ink-dim)] font-medium whitespace-nowrap pl-3">Notify me when</span>
           <input
             ref={fieldRef}
@@ -64,6 +69,7 @@ export function NotifyHero() {
       <ComingSoonMarquee />
       <DonateNudge />
 
+      {showFlow && <NotifyFlow sites={sites} onClose={() => setShowFlow(false)} />}
     </section>
   );
 }
