@@ -14,7 +14,8 @@ function freshDb() {
     CREATE TABLE subscriptions (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       site_id TEXT, phone_hash TEXT, phone_ciphertext TEXT, status TEXT,
-      created_at INTEGER, activated_at INTEGER, triggered_at INTEGER
+      created_at INTEGER, activated_at INTEGER, triggered_at INTEGER,
+      kind TEXT NOT NULL DEFAULT 'email'
     );
   `);
   raw.close();

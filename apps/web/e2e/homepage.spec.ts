@@ -127,22 +127,23 @@ test('admin: wrong token shows error, right token enters', async ({ page }) => {
   await expect(page.getByRole('heading', { name: /Overview/ })).toBeVisible({ timeout: 5_000 });
 });
 
-test('notify: request OTP in DryRun mode returns ok + maskedPhone', async ({ request }) => {
+test('notify: request OTP via email returns ok + maskedContact', async ({ request }) => {
   const r = await request.post('http://localhost:3210/api/notify/request', {
-    data: { phone: '9876543210', siteId: 'aadhaar-ssup' },
+    data: { contact: 'test1@example.com', siteId: 'aadhaar-ssup', kind: 'email' },
   });
   expect(r.status()).toBe(200);
   const data = await r.json();
   expect(data.ok).toBe(true);
-  expect(data.maskedPhone).toMatch(/^\+91 98•••/);
+  expect(data.maskedContact).toMatch(/^te\*\*\*@/);
+  expect(data.kind).toBe('email');
 });
 
 test('notify: verify with wrong OTP fails 403', async ({ request }) => {
   await request.post('http://localhost:3210/api/notify/request', {
-    data: { phone: '9876543211', siteId: 'aadhaar-ssup' },
+    data: { contact: 'test2@example.com', siteId: 'aadhaar-ssup', kind: 'email' },
   });
   const r = await request.post('http://localhost:3210/api/notify/verify', {
-    data: { phone: '9876543211', otp: '000000' },
+    data: { contact: 'test2@example.com', otp: '000000', kind: 'email' },
   });
   expect(r.status()).toBe(403);
 });
