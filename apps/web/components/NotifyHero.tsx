@@ -40,7 +40,7 @@ export function NotifyHero({ sites }: Props) {
         </h1>
 
         <p className="mt-5 text-base font-medium text-[var(--color-ink-dim)] leading-snug max-w-[540px] mx-auto">
-          Get a free WhatsApp alert the moment any of India's <b className="text-[var(--color-ink)] font-semibold">12 most-used government websites</b> starts working again. One OTP, max <b className="text-[var(--color-ink)] font-semibold">5 active alerts</b> per number, no spam, no signup.
+          Get a free <b className="text-[var(--color-ink)] font-semibold">email alert</b> the moment any of India's <b className="text-[var(--color-ink)] font-semibold">12 most-used government websites</b> starts working again. One OTP, max <b className="text-[var(--color-ink)] font-semibold">5 active alerts</b> per email, no spam, no signup.
         </p>
 
         <form className="notify-form mt-10 bg-[var(--color-paper)] border border-[var(--color-border-strong)] rounded-2xl px-5.5 pl-5 py-2 flex items-center gap-2.5 shadow-[0_8px_24px_-12px_rgba(15,31,95,0.15),_0_2px_6px_-2px_rgba(15,31,95,0.08)]"
@@ -57,12 +57,16 @@ export function NotifyHero({ sites }: Props) {
         </form>
 
         <div className="mt-3 text-xs text-[var(--color-ink-faint)] flex items-center justify-center gap-3">
-          {['WhatsApp delivery', 'One-time OTP', 'No signup', 'Free, always'].map((t) => (
+          {['Email delivery', 'One-time OTP', 'No signup', 'Free, always'].map((t) => (
             <span key={t} className="inline-flex items-center gap-1.5">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={3} className="w-3 h-3 text-[var(--color-green)]"><polyline points="20 6 9 17 4 12" /></svg>
               {t}
             </span>
           ))}
+        </div>
+        <div className="mt-4 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[var(--color-saffron-soft)] text-[var(--color-saffron)] text-[11px] font-semibold">
+          <span>📱</span>
+          WhatsApp alerts · coming soon
         </div>
       </div>
 
