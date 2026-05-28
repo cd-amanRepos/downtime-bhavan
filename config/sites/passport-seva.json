@@ -1,0 +1,12 @@
+{
+  "id": "passport-seva",
+  "name": "Passport Seva",
+  "url": "https://www.passportindia.gov.in/AppOnlineProject/welcomeLink",
+  "selectors": {
+    "mustExist": [],
+    "mustNotExist": []
+  },
+  "checkpointRegion": "mumbai",
+  "headlessTimeoutMs": 20000,
+  "enabled": true
+}

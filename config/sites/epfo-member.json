@@ -1,0 +1,12 @@
+{
+  "id": "epfo-member",
+  "name": "EPFO Member Portal",
+  "url": "https://unifiedportal-mem.epfindia.gov.in/memberinterface/",
+  "selectors": {
+    "mustExist": [],
+    "mustNotExist": []
+  },
+  "checkpointRegion": "mumbai",
+  "headlessTimeoutMs": 20000,
+  "enabled": true
+}

@@ -1,0 +1,12 @@
+{
+  "id": "mca",
+  "name": "MCA Portal",
+  "url": "https://www.mca.gov.in/content/mca/global/en/home.html",
+  "selectors": {
+    "mustExist": [],
+    "mustNotExist": []
+  },
+  "checkpointRegion": "mumbai",
+  "headlessTimeoutMs": 20000,
+  "enabled": true
+}

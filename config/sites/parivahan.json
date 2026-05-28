@@ -1,0 +1,12 @@
+{
+  "id": "parivahan",
+  "name": "Vahan · Sarathi (Parivahan)",
+  "url": "https://parivahan.gov.in/parivahan/",
+  "selectors": {
+    "mustExist": [],
+    "mustNotExist": []
+  },
+  "checkpointRegion": "mumbai",
+  "headlessTimeoutMs": 20000,
+  "enabled": true
+}

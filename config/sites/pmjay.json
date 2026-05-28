@@ -1,0 +1,12 @@
+{
+  "id": "pmjay",
+  "name": "PMJAY · Ayushman Bharat",
+  "url": "https://pmjay.gov.in/",
+  "selectors": {
+    "mustExist": [],
+    "mustNotExist": []
+  },
+  "checkpointRegion": "mumbai",
+  "headlessTimeoutMs": 20000,
+  "enabled": true
+}

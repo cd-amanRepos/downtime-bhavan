@@ -1,0 +1,12 @@
+{
+  "id": "income-tax",
+  "name": "Income Tax e-Filing",
+  "url": "https://eportal.incometax.gov.in/iec/foservices/",
+  "selectors": {
+    "mustExist": [],
+    "mustNotExist": []
+  },
+  "checkpointRegion": "mumbai",
+  "headlessTimeoutMs": 20000,
+  "enabled": true
+}

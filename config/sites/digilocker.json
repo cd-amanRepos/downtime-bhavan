@@ -1,0 +1,12 @@
+{
+  "id": "digilocker",
+  "name": "DigiLocker",
+  "url": "https://www.digilocker.gov.in/",
+  "selectors": {
+    "mustExist": [],
+    "mustNotExist": []
+  },
+  "checkpointRegion": "mumbai",
+  "headlessTimeoutMs": 20000,
+  "enabled": true
+}

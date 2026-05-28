@@ -1,0 +1,12 @@
+{
+  "id": "scholarships",
+  "name": "National Scholarship Portal",
+  "url": "https://scholarships.gov.in/",
+  "selectors": {
+    "mustExist": [],
+    "mustNotExist": []
+  },
+  "checkpointRegion": "mumbai",
+  "headlessTimeoutMs": 20000,
+  "enabled": true
+}

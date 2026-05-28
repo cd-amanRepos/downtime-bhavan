@@ -1,0 +1,12 @@
+{
+  "id": "gst-portal",
+  "name": "GST Portal",
+  "url": "https://services.gst.gov.in/services/login",
+  "selectors": {
+    "mustExist": [],
+    "mustNotExist": []
+  },
+  "checkpointRegion": "mumbai",
+  "headlessTimeoutMs": 20000,
+  "enabled": true
+}

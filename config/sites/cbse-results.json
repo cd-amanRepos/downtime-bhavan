@@ -1,0 +1,12 @@
+{
+  "id": "cbse-results",
+  "name": "CBSE Results",
+  "url": "https://cbseresults.nic.in/",
+  "selectors": {
+    "mustExist": [],
+    "mustNotExist": []
+  },
+  "checkpointRegion": "mumbai",
+  "headlessTimeoutMs": 20000,
+  "enabled": true
+}

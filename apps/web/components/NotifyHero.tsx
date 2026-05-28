@@ -78,13 +78,14 @@ export function NotifyHero({ sites }: Props) {
   );
 }
 
-const UPCOMING_SITES = [
+const TRACKED_SITES = [
+  'Aadhaar SSUP',
   'EPFO Member Portal',
   'GST Portal',
   'Income Tax e-Filing',
   'Passport Seva',
   'DigiLocker',
-  'Vahan / Sarathi',
+  'Vahan · Sarathi',
   'MCA Portal',
   'eShram',
   'National Scholarship Portal',
@@ -94,16 +95,16 @@ const UPCOMING_SITES = [
 
 function ComingSoonMarquee() {
   // duplicate the list so the keyframe animation can loop seamlessly
-  const loop = [...UPCOMING_SITES, ...UPCOMING_SITES];
+  const loop = [...TRACKED_SITES, ...TRACKED_SITES];
   return (
     <div className="relative z-10 mt-2 border-t border-[var(--color-border)]">
       <div className="max-w-[760px] mx-auto px-14 pt-8 pb-5 text-center">
         <div className="inline-flex items-center gap-2.5 text-[10.5px] font-semibold text-[var(--color-ink-faint)] tracking-[0.18em] uppercase mb-4">
           <span className="w-6 h-px bg-[var(--color-border-strong)]" />
           <span>
-            Upcoming Departments
-            <span className="text-[var(--color-saffron)] font-bold mx-2">·</span>
-            <span className="text-[var(--color-ink-soft)]">11 more arriving</span>
+            Now Tracking
+            <span className="text-[var(--color-green)] font-bold mx-2">·</span>
+            <span className="text-[var(--color-ink-soft)]">All 12 departments live</span>
           </span>
           <span className="w-6 h-px bg-[var(--color-border-strong)]" />
         </div>
@@ -121,9 +122,9 @@ function ComingSoonMarquee() {
               key={`${name}-${i}`}
               className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-[var(--color-paper)] border border-[var(--color-border)] rounded-full whitespace-nowrap text-[12.5px] font-semibold text-[var(--color-ink-soft)] shadow-[0_1px_2px_rgba(15,31,95,0.04)]"
             >
-              <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-saffron)]" />
+              <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-green)]" />
               {name}
-              <span className="text-[10px] font-bold text-[var(--color-saffron)] uppercase tracking-[0.1em]">soon</span>
+              <span className="text-[10px] font-bold text-[var(--color-green)] uppercase tracking-[0.1em]">live</span>
             </span>
           ))}
         </div>
