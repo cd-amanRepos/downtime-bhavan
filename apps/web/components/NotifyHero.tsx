@@ -22,31 +22,6 @@ export function NotifyHero({ sites }: Props) {
 
   return (
     <section className="col center relative bg-[var(--color-bg)] flex flex-col overflow-hidden">
-      {/* Watermark: oversized saffron chakra. Intentionally bigger than the
-          center column so it bleeds past every edge — viewers only see the
-          ambient saffron glow, not a complete recognizable emblem. Static,
-          very low opacity, thin strokes. */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1600px] h-[1600px] opacity-[0.035] z-0"
-      >
-        <svg
-          viewBox="0 0 100 100"
-          fill="none"
-          stroke="var(--color-saffron)"
-          strokeWidth="0.25"
-          className="w-full h-full"
-        >
-          <circle cx="50" cy="50" r="46" strokeWidth="0.4" />
-          <circle cx="50" cy="50" r="40" />
-          <circle cx="50" cy="50" r="2" fill="var(--color-saffron)" />
-          {/* 24 spokes at 15° intervals, radiating from center to inner ring */}
-          {[0, 15, 30, 45, 60, 75, 90, 105, 120, 135, 150, 165, 180, 195, 210, 225, 240, 255, 270, 285, 300, 315, 330, 345].map((a) => (
-            <line key={a} x1="50" y1="10" x2="50" y2="40" transform={`rotate(${a} 50 50)`} />
-          ))}
-        </svg>
-      </div>
-
       <div className="max-w-[760px] mx-auto px-14 pt-20 pb-16 text-center relative z-10">
         <div className="inline-flex items-center gap-2.5 text-xs font-semibold text-[var(--color-ink-dim)] mb-6">
           <span className="w-7 h-px bg-[var(--color-border-strong)]" />
