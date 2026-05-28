@@ -1,5 +1,6 @@
 import { createDb } from '@dtb/db';
 import { runOneTick } from './loop.js';
+import { recomputeCommunityFlag } from './community-flag.js';
 import { resolve } from 'node:path';
 
 // packages/monitor/src/index.ts → climb 3 levels to repo root.
@@ -30,6 +31,18 @@ async function tick() {
 
 await tick();                       // run once immediately
 setInterval(tick, intervalMs);
+
+const COMMUNITY_FLAG_TICK_MS = 60_000;
+
+function communityTick() {
+  try {
+    recomputeCommunityFlag(db);
+  } catch (err) {
+    console.error('[monitor] community flag recompute failed:', err);
+  }
+}
+communityTick(); // run once immediately
+setInterval(communityTick, COMMUNITY_FLAG_TICK_MS);
 
 // Keep the event loop alive
 process.on('SIGINT', () => { console.log('\n[monitor] shutting down'); process.exit(0); });
