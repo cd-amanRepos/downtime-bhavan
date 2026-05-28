@@ -8,6 +8,11 @@ import {
 } from '@/lib/seo/schema';
 import { SITE_URL } from '@/lib/seo/constants';
 
+// Render on every request so DTB_UPI_ID changes via `fly secrets set` take
+// effect immediately. Without this, Next.js statically generates the page at
+// build time, baking whatever env value was present at build into the HTML.
+export const dynamic = 'force-dynamic';
+
 export const metadata = buildMetadata({
   title: 'Donate · keep the unofficial observatory free for citizens',
   description: 'Downtime Bhavan runs on donations. UPI for Indian donors. Covers the server, domain, and email sender. No ads, no sponsors.',
