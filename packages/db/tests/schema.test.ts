@@ -62,4 +62,44 @@ describe('schema', () => {
     expect(statusRows).toHaveLength(1);
     expect(statusRows[0]?.currentState).toBe('working');
   });
+
+  it('can insert a grievance, a reaction, and a rate-limit row', () => {
+    const db = createDb(':memory:');
+    const sqlite = (db as any).$client as import('better-sqlite3').Database;
+    sqlite.exec(`
+      CREATE TABLE sites (id TEXT PRIMARY KEY, name TEXT, url TEXT, config_json TEXT, enabled INTEGER DEFAULT 1);
+      CREATE TABLE grievances (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        site_id TEXT, tag TEXT, body TEXT, ip_hash TEXT, created_at INTEGER,
+        visible INTEGER DEFAULT 1, reports_count INTEGER DEFAULT 0
+      );
+      CREATE TABLE reactions (
+        grievance_id INTEGER, ip_hash TEXT, kind TEXT, created_at INTEGER,
+        PRIMARY KEY (grievance_id, ip_hash, kind)
+      );
+      CREATE TABLE rate_limit_attempts (
+        action TEXT, ip_hash TEXT, slot_minute INTEGER, count INTEGER,
+        PRIMARY KEY (action, ip_hash, slot_minute)
+      );
+    `);
+
+    db.insert(schema.sites).values({ id: 's', name: 'S', url: 'https://s', configJson: '{}', enabled: true }).run();
+
+    db.insert(schema.grievances).values({
+      siteId: 's', tag: 'otp-not-coming', body: 'never came',
+      ipHash: 'abc', createdAt: 1, visible: true, reportsCount: 0,
+    }).run();
+    const gs = db.select().from(schema.grievances).all();
+    expect(gs).toHaveLength(1);
+
+    db.insert(schema.reactions).values({
+      grievanceId: gs[0]!.id, ipHash: 'abc', kind: 'angry', createdAt: 1,
+    }).run();
+    expect(db.select().from(schema.reactions).all()).toHaveLength(1);
+
+    db.insert(schema.rateLimitAttempts).values({
+      action: 'grievance:submit', ipHash: 'abc', slotMinute: 100, count: 1,
+    }).run();
+    expect(db.select().from(schema.rateLimitAttempts).all()).toHaveLength(1);
+  });
 });
