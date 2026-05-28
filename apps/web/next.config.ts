@@ -9,7 +9,7 @@ const config: NextConfig = {
   webpack(webpackConfig) {
     // Allow `import './foo.js'` to resolve to `./foo.ts` in workspace pkgs.
     webpackConfig.resolve.extensionAlias = {
-      '.js': ['.ts', '.js'],
+      '.js': ['.tsx', '.ts', '.js'],
       '.jsx': ['.tsx', '.jsx'],
     };
     return webpackConfig;
