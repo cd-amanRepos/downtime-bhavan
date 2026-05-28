@@ -136,6 +136,7 @@ export const subscriptions = sqliteTable(
     siteId: text('site_id').notNull().references(() => sites.id),
     phoneHash: text('phone_hash').notNull(),
     phoneCiphertext: text('phone_ciphertext'),
+    kind: text('kind', { enum: ['email', 'whatsapp'] }).notNull().default('email'),
     status: text('status', {
       enum: ['pending_otp', 'active', 'triggered', 'cancelled', 'failed', 'deleted'],
     }).notNull().default('pending_otp'),
@@ -160,6 +161,7 @@ export const otpAttempts = sqliteTable(
     phoneHash: text('phone_hash').notNull(),
     codeHash: text('code_hash').notNull(),
     purpose: text('purpose', { enum: ['notify_signup', 'delete_data'] }).notNull(),
+    kind: text('kind', { enum: ['email', 'whatsapp'] }).notNull().default('email'),
     expiresAt: integer('expires_at').notNull(),
     used: integer('used', { mode: 'boolean' }).notNull().default(false),
     ipHash: text('ip_hash'),
