@@ -31,3 +31,4 @@ test-results/
 
 # Brainstorm artifacts
 .superpowers/
+apps/web/tsconfig.tsbuildinfo
