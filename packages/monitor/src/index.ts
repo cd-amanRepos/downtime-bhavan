@@ -1,5 +1,6 @@
 import { createDb } from '@dtb/db';
 import { runOneTick } from './loop.js';
+import { runOneHtmlTick } from './html-loop.js';
 import { recomputeCommunityFlag } from './community-flag.js';
 import { resolve } from 'node:path';
 
@@ -43,6 +44,28 @@ function communityTick() {
 }
 communityTick(); // run once immediately
 setInterval(communityTick, COMMUNITY_FLAG_TICK_MS);
+
+// HTML layer-2 probe — slower cadence than HTTP, 15 min by default.
+const HTML_TICK_MS = Number(process.env.DTB_HTML_TICK_MS ?? 15 * 60 * 1000);
+let htmlRunning = false;
+async function htmlTick() {
+  if (htmlRunning) {
+    console.log('[monitor] html-tick still in flight, skipping');
+    return;
+  }
+  htmlRunning = true;
+  try {
+    await runOneHtmlTick(db);
+    console.log(`[monitor] html-tick OK ${new Date().toISOString()}`);
+  } catch (err) {
+    console.error('[monitor] html-tick failed:', err);
+  } finally {
+    htmlRunning = false;
+  }
+}
+// Delay first HTML probe by 30s so it doesn't pile on top of the first
+// HTTP tick at container startup.
+setTimeout(() => { htmlTick(); setInterval(htmlTick, HTML_TICK_MS); }, 30_000);
 
 // Keep the event loop alive
 process.on('SIGINT', () => { console.log('\n[monitor] shutting down'); process.exit(0); });

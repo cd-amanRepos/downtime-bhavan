@@ -12,7 +12,8 @@
   },
   "dependencies": {
     "@dtb/db": "*",
-    "@dtb/shared": "*"
+    "@dtb/shared": "*",
+    "cheerio": "^1.2.0"
   },
   "devDependencies": {
     "tsx": "^4.19.0"

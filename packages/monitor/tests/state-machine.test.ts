@@ -78,4 +78,50 @@ describe('deriveNextState', () => {
     const result = deriveNextState(prev, recent);
     expect(result.stateSince).toBe(t(-1000));
   });
+
+  // ─── v1.3.0 layer-aware behavior ───────────────────────────────────
+
+  const htmlCheck = (
+    offset: number,
+    result: 'up' | 'down' | 'degraded',
+  ): CheckResult => ({
+    siteId: 's',
+    layer: 'headless',
+    result,
+    checkedAt: t(offset),
+  });
+
+  it('Working → Degraded on a failed HTML check (HTTP still up)', () => {
+    const prev = { state: 'working' as SiteState, stateSince: t(-300) };
+    const recent = [htmlCheck(-30, 'down'), httpCheck(-60, 'up'), httpCheck(-180, 'up')];
+    const result = deriveNextState(prev, recent);
+    expect(result.state).toBe('degraded');
+    expect(result.stateSince).toBe(t(-30));
+  });
+
+  it('Degraded stays Degraded with 2 HTML failures + HTTP still up (no escalation to Down)', () => {
+    const prev = { state: 'degraded' as SiteState, stateSince: t(-300) };
+    const recent = [
+      htmlCheck(-30, 'down'),
+      htmlCheck(-150, 'down'),
+      httpCheck(-60, 'up'),
+      httpCheck(-180, 'up'),
+    ];
+    const result = deriveNextState(prev, recent);
+    expect(result.state).toBe('degraded');
+    expect(result.stateSince).toBe(t(-300));
+  });
+
+  it('Degraded → Down still triggers on 2 consecutive HTTP failures even with HTML failures interleaved', () => {
+    const prev = { state: 'degraded' as SiteState, stateSince: t(-300) };
+    const recent = [
+      httpCheck(-30, 'down'),
+      htmlCheck(-90, 'down'),
+      httpCheck(-150, 'down'),
+      httpCheck(-270, 'up'),
+    ];
+    const result = deriveNextState(prev, recent);
+    expect(result.state).toBe('down');
+    expect(result.stateSince).toBe(t(-150));
+  });
 });
