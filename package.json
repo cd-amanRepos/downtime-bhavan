@@ -1,6 +1,6 @@
 {
   "name": "downtime-bhavan",
-  "version": "0.4.0-admin",
+  "version": "0.5.0-notify",
   "private": true,
   "type": "module",
   "workspaces": [
