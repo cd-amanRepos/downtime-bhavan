@@ -42,7 +42,7 @@ export default function Page() {
           <span>☕</span>
           <span>Office of the Chai Fund</span>
         </span>
-        <h1 className="text-4xl font-bold tracking-tight">
+        <h1 className="text-3xl md:text-4xl font-bold tracking-tight">
           If you liked the work,<br/>
           <em className="text-[var(--color-blue)] font-semibold" style={{ fontFamily: 'var(--font-serif)' }}>fund the continuation.</em>
         </h1>
@@ -53,7 +53,7 @@ export default function Page() {
         </p>
       </div>
 
-      <DonateQR upiId={upiId} imagePath="/donate-qr.jpeg" />
+      <DonateQR upiId={upiId} />
 
       {ghSponsors && (
         <div className="text-center mt-6">

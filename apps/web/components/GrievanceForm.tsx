@@ -100,10 +100,10 @@ export function GrievanceForm({ sites, onClose, onSubmitted }: Props) {
     <>
       <Script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer />
 
-      <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[100] flex items-center justify-center px-4"
+      <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[100] flex items-end sm:items-center justify-center sm:px-4 overflow-y-auto"
            onClick={(e) => e.target === e.currentTarget && onClose()}>
         <form onSubmit={submit}
-              className="bg-[var(--color-paper)] rounded-2xl p-7 max-w-[480px] w-full shadow-[0_20px_60px_-12px_rgba(15,31,95,0.5)]">
+              className="bg-[var(--color-paper)] rounded-t-2xl sm:rounded-2xl p-5 pb-[max(env(safe-area-inset-bottom),1.25rem)] sm:p-7 w-full sm:max-w-[480px] shadow-[0_20px_60px_-12px_rgba(15,31,95,0.5)] max-h-[100dvh] overflow-y-auto">
           <div className="flex justify-between items-baseline mb-1">
             <h2 className="text-xl font-bold tracking-tight">File a grievance</h2>
             <button type="button" onClick={onClose} className="text-[var(--color-ink-faint)] hover:text-[var(--color-ink)] text-sm" aria-label="Close">✕</button>

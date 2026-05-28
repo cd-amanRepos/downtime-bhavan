@@ -71,7 +71,7 @@ export default async function Page() {
         ]}
       />
 
-      <div className="max-w-3xl mx-auto py-12 px-7">
+      <div className="max-w-3xl mx-auto">
         <h1 className="text-3xl font-bold tracking-tight mb-3">Tracked sites</h1>
         <p className="text-[var(--color-ink-dim)] mb-2 leading-relaxed">
           These are the Indian government websites currently observed by Downtime
@@ -100,7 +100,7 @@ export default async function Page() {
               <li key={s.id}>
                 <a
                   href={`/sites/${s.id}`}
-                  className="flex items-center justify-between px-6 py-4 hover:bg-[var(--color-paper-2)] border-b border-[var(--color-border)] last:border-b-0 no-underline text-inherit transition-colors"
+                  className="flex items-center justify-between gap-3 px-4 md:px-6 py-4 hover:bg-[var(--color-paper-2)] border-b border-[var(--color-border)] last:border-b-0 no-underline text-inherit transition-colors"
                 >
                   <span className="flex items-center gap-3 min-w-0">
                     <span
@@ -115,7 +115,7 @@ export default async function Page() {
                       {s.name}
                     </span>
                   </span>
-                  <span className="flex items-center gap-2 shrink-0 ml-4">
+                  <span className="flex items-center gap-2 shrink-0">
                     <span
                       className="text-[11px] font-bold uppercase tracking-[0.12em]"
                       style={{ color }}

@@ -32,14 +32,14 @@ function timeAgo(then: number): string {
 export function GrievancePost({ grievance: g }: Props) {
   const state = g.siteState ?? 'unknown';
   return (
-    <article className="px-7 py-4 border-b border-[var(--color-border)] hover:bg-[var(--color-paper-2)] transition-colors">
-      <div className="flex items-center justify-between mb-2">
-        <span className="inline-flex items-center gap-1.5 text-xs font-bold">
-          <span className="w-1.5 h-1.5 rounded-full" style={{ background: DOT_COLOR_BY_STATE[state] }} />
-          {g.siteName}
-          <span className="text-[var(--color-ink-faint)] font-medium text-[11px] ml-1">· {g.tag}</span>
+    <article className="px-4 md:px-7 py-4 border-b border-[var(--color-border)] hover:bg-[var(--color-paper-2)] transition-colors">
+      <div className="flex items-center justify-between gap-2 mb-2">
+        <span className="inline-flex items-center gap-1.5 text-xs font-bold min-w-0">
+          <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: DOT_COLOR_BY_STATE[state] }} />
+          <span className="truncate">{g.siteName}</span>
+          <span className="text-[var(--color-ink-faint)] font-medium text-[11px] ml-1 truncate">· {g.tag}</span>
         </span>
-        <span className="text-[11px] text-[var(--color-ink-faint)] font-medium">{timeAgo(g.createdAt)}</span>
+        <span className="text-[11px] text-[var(--color-ink-faint)] font-medium shrink-0">{timeAgo(g.createdAt)}</span>
       </div>
       <div className="text-sm font-medium leading-snug mb-2.5">{g.body}</div>
       <div className="flex gap-1.5 flex-wrap">

@@ -20,7 +20,7 @@ export function PageShell({ active, children, maxWidth = 1100 }: Props) {
       <PageHeader active={active} />
       <Tricolor />
       <main className="bg-[var(--color-bg)] min-h-[calc(100vh-160px)]">
-        <div className="mx-auto px-7 py-12" style={{ maxWidth }}>
+        <div className="mx-auto px-4 md:px-7 py-8 md:py-12" style={{ maxWidth }}>
           {children}
         </div>
       </main>

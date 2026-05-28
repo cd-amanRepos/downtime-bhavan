@@ -44,7 +44,7 @@ export function GrievanceStream({ initial, sites }: Props) {
     <>
       <div>
         {grievances.length === 0 ? (
-          <div className="px-7 py-10 text-center text-sm text-[var(--color-ink-dim)]">
+          <div className="px-4 md:px-7 py-10 text-center text-sm text-[var(--color-ink-dim)]">
             <p className="font-medium">No grievances yet.</p>
             <p className="mt-2 text-xs">Be the first citizen to file one.</p>
           </div>
@@ -69,7 +69,7 @@ export function GrievanceStream({ initial, sites }: Props) {
         )}
       </div>
 
-      <div className="sticky bottom-0 bg-[var(--color-paper)] border-t border-[var(--color-border)] px-7 py-3.5 text-center">
+      <div className="sticky bottom-0 bg-[var(--color-paper)] border-t border-[var(--color-border)] px-4 md:px-7 py-3.5 text-center pb-[max(env(safe-area-inset-bottom),0.875rem)]">
         <button onClick={() => setShowForm(true)}
                 className="bg-[var(--color-blue)] text-white border-0 px-4 py-3.5 rounded-[11px] text-[13px] font-bold w-full inline-flex items-center justify-center gap-2.5 shadow-[0_4px_12px_-4px_rgba(30,58,138,0.4),_inset_0_1px_0_rgba(255,255,255,0.15)] hover:bg-[var(--color-blue-deep)] transition-all">
           + File a grievance

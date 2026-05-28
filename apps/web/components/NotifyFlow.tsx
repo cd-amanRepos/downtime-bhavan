@@ -82,9 +82,9 @@ export function NotifyFlow({ sites, initialSiteId, onClose }: Props) {
   }
 
   return (
-    <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[100] flex items-center justify-center px-4"
+    <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[100] flex items-end sm:items-center justify-center sm:px-4 overflow-y-auto"
          onClick={(e) => e.target === e.currentTarget && onClose()}>
-      <div className="bg-[var(--color-paper)] rounded-2xl p-7 max-w-[440px] w-full shadow-[0_20px_60px_-12px_rgba(15,31,95,0.5)]">
+      <div className="bg-[var(--color-paper)] rounded-t-2xl sm:rounded-2xl p-5 pb-[max(env(safe-area-inset-bottom),1.25rem)] sm:p-7 w-full sm:max-w-[440px] shadow-[0_20px_60px_-12px_rgba(15,31,95,0.5)] max-h-[100dvh] overflow-y-auto">
         <div className="flex justify-between items-baseline mb-1">
           <h2 className="text-xl font-bold tracking-tight">
             {step === 'email' && 'Set an email alert'}

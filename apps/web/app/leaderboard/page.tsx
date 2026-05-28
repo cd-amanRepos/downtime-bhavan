@@ -72,11 +72,11 @@ export default async function Page() {
   return (
     <PageShell active="leaderboard">
       <JsonLd data={jsonLd} />
-      <div className="text-center mb-10">
+      <div className="text-center mb-8 md:mb-10">
         <span className="block text-[10.5px] font-semibold uppercase tracking-[0.18em] text-[var(--color-saffron)] mb-2">
           Awards Ceremony · {new Date().toLocaleDateString('en-IN', { month: 'long', year: 'numeric' })}
         </span>
-        <h1 className="text-4xl font-bold tracking-tight">
+        <h1 className="text-3xl md:text-4xl font-bold tracking-tight">
           Worst Performing<br/>
           <em className="text-[var(--color-red)] font-semibold" style={{ fontFamily: 'var(--font-serif)' }}>Government Websites.</em>
         </h1>
@@ -87,21 +87,21 @@ export default async function Page() {
 
       <div className="border border-[var(--color-border)] rounded-2xl overflow-hidden bg-[var(--color-paper)]">
         {ranked.map((r) => (
-          <div key={r.siteId} className={`flex items-center gap-6 px-6 py-5 border-b border-[var(--color-border)] last:border-b-0 ${r.trophy ? 'bg-[var(--color-saffron-soft)]/30' : ''} hover:bg-[var(--color-paper-2)]`}>
-            <span className="text-3xl font-bold tabular-nums text-[var(--color-ink-faint)] w-12 text-right">
+          <div key={r.siteId} className={`flex items-center gap-3 md:gap-6 px-4 md:px-6 py-4 md:py-5 border-b border-[var(--color-border)] last:border-b-0 ${r.trophy ? 'bg-[var(--color-saffron-soft)]/30' : ''} hover:bg-[var(--color-paper-2)]`}>
+            <span className="text-2xl md:text-3xl font-bold tabular-nums text-[var(--color-ink-faint)] w-8 md:w-12 text-right shrink-0">
               {r.rank}
             </span>
-            <a href={`/sites/${r.siteId}`} className="flex-1">
-              <div className="flex items-center gap-3">
-                <span className="text-base font-bold tracking-tight text-[var(--color-ink)]">{r.name}</span>
-                {r.trophy && <span className="text-xs font-bold px-2 py-0.5 rounded bg-[var(--color-saffron)] text-white tracking-wide">{r.trophy}</span>}
+            <a href={`/sites/${r.siteId}`} className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 md:gap-3 flex-wrap">
+                <span className="text-[15px] md:text-base font-bold tracking-tight text-[var(--color-ink)]">{r.name}</span>
+                {r.trophy && <span className="text-[10px] md:text-xs font-bold px-2 py-0.5 rounded bg-[var(--color-saffron)] text-white tracking-wide">{r.trophy}</span>}
               </div>
               <div className="text-[12px] text-[var(--color-ink-faint)] mt-0.5 font-medium">
                 {r.totalReports} citizen grievances · {r.longestOutageMs > 0 ? `currently down for ${fmtHours(r.longestOutageMs)}` : 'no current outage'}
               </div>
             </a>
-            <div className="text-right">
-              <span className="text-2xl font-bold tabular-nums" style={{ color: r.uptime30dPct !== null && r.uptime30dPct < 50 ? 'var(--color-red)' : r.uptime30dPct !== null && r.uptime30dPct < 80 ? 'var(--color-amber)' : 'var(--color-green)' }}>
+            <div className="text-right shrink-0">
+              <span className="text-xl md:text-2xl font-bold tabular-nums" style={{ color: r.uptime30dPct !== null && r.uptime30dPct < 50 ? 'var(--color-red)' : r.uptime30dPct !== null && r.uptime30dPct < 80 ? 'var(--color-amber)' : 'var(--color-green)' }}>
                 {r.uptime30dPct === null ? '—' : Math.round(r.uptime30dPct)}
                 <sup className="text-sm text-[var(--color-ink-faint)] ml-px">%</sup>
               </span>

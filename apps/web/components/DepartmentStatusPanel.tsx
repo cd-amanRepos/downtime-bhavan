@@ -37,8 +37,8 @@ export async function DepartmentStatusPanel() {
   };
 
   return (
-    <section className="col col-side border-r border-[var(--color-border)] bg-[var(--color-bg)] relative overflow-hidden">
-      <div className="px-7 pt-6 pb-4 border-b border-[var(--color-border)] bg-[var(--color-paper)]">
+    <section className="col col-side border-t lg:border-t-0 lg:border-r border-[var(--color-border)] bg-[var(--color-bg)] relative overflow-hidden">
+      <div className="px-4 md:px-7 pt-5 md:pt-6 pb-4 border-b border-[var(--color-border)] bg-[var(--color-paper)]">
         <span className="block text-[10.5px] font-semibold text-[var(--color-ink-faint)] tracking-[0.18em] uppercase">
           {snapshots.length} Departments · Mumbai checkpoint
         </span>
@@ -65,7 +65,7 @@ export async function DepartmentStatusPanel() {
         {snapshots.map((s) => <StatusItem key={s.siteId} snapshot={s} />)}
       </div>
 
-      <a href="/departments" className="block px-7 py-3.5 text-center text-[11.5px] text-[var(--color-blue)] font-semibold bg-[var(--color-paper)] border-t border-[var(--color-border)] hover:bg-[var(--color-blue-soft)]">
+      <a href="/departments" className="block px-4 md:px-7 py-3.5 text-center text-[11.5px] text-[var(--color-blue)] font-semibold bg-[var(--color-paper)] border-t border-[var(--color-border)] hover:bg-[var(--color-blue-soft)]">
         View all {snapshots.length} departments →
       </a>
     </section>

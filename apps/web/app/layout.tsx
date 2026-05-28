@@ -1,7 +1,7 @@
 import './globals.css';
 import { Plus_Jakarta_Sans, Spectral, Noto_Sans_Devanagari } from 'next/font/google';
 import type { ReactNode } from 'react';
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { JsonLd } from '@/components/JsonLd';
 import { BRAND_NAME, SITE_URL } from '@/lib/seo/constants';
 import {
@@ -54,6 +54,13 @@ export const metadata: Metadata = {
     apple: { url: '/apple-icon.png', sizes: '180x180', type: 'image/png' },
   },
   category: 'technology',
+};
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  viewportFit: 'cover',
+  themeColor: '#1E3A8A',
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {

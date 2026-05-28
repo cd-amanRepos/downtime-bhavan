@@ -22,7 +22,7 @@ export function StatusItem({ snapshot }: Props) {
   const stamp = STAMP_TEXT[currentState];
 
   return (
-    <article className="grid grid-cols-[14px_1fr_auto] gap-3 items-start px-7 py-4 border-b border-[var(--color-border)] cursor-pointer transition-colors hover:bg-[var(--color-paper-2)]">
+    <article className="grid grid-cols-[14px_1fr_auto] gap-3 items-start px-4 md:px-7 py-3.5 md:py-4 border-b border-[var(--color-border)] cursor-pointer transition-colors hover:bg-[var(--color-paper-2)]">
       <a href={`/sites/${snapshot.siteId}`} className="contents">
         <span
           aria-label={`${stamp} status indicator`}

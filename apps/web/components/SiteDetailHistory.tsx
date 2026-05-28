@@ -22,13 +22,13 @@ export function SiteDetailHistory({ checks }: Props) {
   }
 
   return (
-    <div className="border border-[var(--color-border)] rounded-2xl p-6 bg-[var(--color-paper)] mb-8">
+    <div className="border border-[var(--color-border)] rounded-2xl p-5 md:p-6 bg-[var(--color-paper)] mb-6 md:mb-8">
       <h2 className="text-base font-bold tracking-tight mb-4">Past 7 days</h2>
       <div className="space-y-3">
         {rows.map((r, i) => (
-          <div key={i} className="flex items-center gap-5">
-            <span className="text-[11.5px] font-semibold uppercase tracking-[0.1em] text-[var(--color-ink-faint)] w-20 shrink-0">{r.label}</span>
-            <div className="flex-1">
+          <div key={i} className="flex items-center gap-3 md:gap-5">
+            <span className="text-[11.5px] font-semibold uppercase tracking-[0.1em] text-[var(--color-ink-faint)] w-16 md:w-20 shrink-0">{r.label}</span>
+            <div className="flex-1 min-w-0">
               <Sparkline buckets={r.buckets} />
             </div>
           </div>

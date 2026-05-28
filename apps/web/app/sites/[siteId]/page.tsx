@@ -117,7 +117,7 @@ export default async function Page({ params }: { params: Promise<{ siteId: strin
         </h2>
         <div className="border border-[var(--color-border)] rounded-2xl overflow-hidden bg-[var(--color-paper)]">
           {grievances.length === 0
-            ? <div className="px-7 py-8 text-center text-sm text-[var(--color-ink-dim)]">No active grievances against {site.name}.</div>
+            ? <div className="px-4 md:px-7 py-8 text-center text-sm text-[var(--color-ink-dim)]">No active grievances against {site.name}.</div>
             : grievances.map((g) => (
                 <GrievancePost key={g.id} grievance={{
                   id: g.id,

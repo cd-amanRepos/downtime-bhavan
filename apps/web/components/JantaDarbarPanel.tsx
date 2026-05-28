@@ -32,8 +32,8 @@ export async function JantaDarbarPanel() {
   const siteLookup = sites.map((s) => ({ id: s.id, name: s.name, state: stateById.get(s.id) }));
 
   return (
-    <section className="col col-side bg-[var(--color-paper)] border-r-0">
-      <div className="px-7 pt-6 pb-4 border-b border-[var(--color-border)]">
+    <section className="col col-side bg-[var(--color-paper)] border-r-0 border-t lg:border-t-0 border-[var(--color-border)]">
+      <div className="px-4 md:px-7 pt-5 md:pt-6 pb-4 border-b border-[var(--color-border)]">
         <span className="block text-[10.5px] font-semibold text-[var(--color-ink-faint)] tracking-[0.18em] uppercase">
           {initial.length} in last 60 min · Live grievances
         </span>
@@ -46,7 +46,7 @@ export async function JantaDarbarPanel() {
 
       <GrievanceStream initial={initial} sites={siteLookup} />
 
-      <div className="px-7 py-3 text-center text-[11.5px] text-[var(--color-blue)] font-semibold cursor-pointer bg-[var(--color-paper-2)] border-t border-[var(--color-border)] hover:bg-[var(--color-blue-soft)]">
+      <div className="px-4 md:px-7 py-3 text-center text-[11.5px] text-[var(--color-blue)] font-semibold cursor-pointer bg-[var(--color-paper-2)] border-t border-[var(--color-border)] hover:bg-[var(--color-blue-soft)]">
         <a href="/janta-darbar">View all grievances →</a>
       </div>
     </section>

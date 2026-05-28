@@ -49,10 +49,10 @@ export function GrievanceListPage({ initial, sites }: Props) {
 
   return (
     <>
-      <div className="mb-6 flex flex-wrap gap-3 justify-between items-center">
-        <div className="flex gap-3 items-center">
+      <div className="mb-6 flex flex-col sm:flex-row sm:flex-wrap gap-3 sm:justify-between sm:items-center">
+        <div className="flex flex-wrap gap-2 sm:gap-3 items-center">
           <select value={siteFilter} onChange={(e) => setSiteFilter(e.target.value)}
-                  className="border border-[var(--color-border-strong)] rounded-lg px-3 py-2 text-sm font-medium bg-[var(--color-paper)]">
+                  className="border border-[var(--color-border-strong)] rounded-lg px-3 py-2 text-sm font-medium bg-[var(--color-paper)] min-w-0 flex-1 sm:flex-initial">
             <option value="">All departments ({grievances.length})</option>
             {sites.map((s) => {
               const n = grievances.filter((g) => g.siteId === s.id).length;
@@ -71,14 +71,14 @@ export function GrievanceListPage({ initial, sites }: Props) {
           </div>
         </div>
         <button onClick={() => setShowForm(true)}
-                className="bg-[var(--color-blue)] text-white px-4 py-2.5 rounded-lg text-sm font-bold hover:bg-[var(--color-blue-deep)]">
+                className="bg-[var(--color-blue)] text-white px-4 py-2.5 rounded-lg text-sm font-bold hover:bg-[var(--color-blue-deep)] w-full sm:w-auto">
           + File a grievance
         </button>
       </div>
 
       <div className="border border-[var(--color-border)] rounded-2xl overflow-hidden bg-[var(--color-paper)]">
         {filtered.length === 0
-          ? <div className="px-7 py-16 text-center text-sm text-[var(--color-ink-dim)]">No grievances match.</div>
+          ? <div className="px-4 md:px-7 py-16 text-center text-sm text-[var(--color-ink-dim)]">No grievances match.</div>
           : filtered.map((g) => {
               const site = siteMap.get(g.siteId);
               return (

@@ -53,39 +53,42 @@ export async function SiteTable() {
 
   return (
     <div className="border border-[var(--color-border)] rounded-2xl overflow-hidden bg-[var(--color-paper)]">
-      <table className="w-full">
+      <table className="w-full table-fixed">
         <thead className="bg-[var(--color-paper-2)] border-b border-[var(--color-border)]">
           <tr className="text-left text-[10.5px] font-semibold uppercase tracking-[0.12em] text-[var(--color-ink-faint)]">
-            <th className="px-5 py-3 w-[60px]">#</th>
+            <th className="hidden md:table-cell px-5 py-3 w-[60px]">#</th>
             <th className="px-3 py-3">Department</th>
-            <th className="px-3 py-3 w-[160px]">24-hour history</th>
-            <th className="px-3 py-3 w-[100px] text-right">30d uptime</th>
-            <th className="px-3 py-3 w-[120px]">Status</th>
+            <th className="hidden md:table-cell px-3 py-3 w-[160px]">24-hour history</th>
+            <th className="px-3 py-3 w-[84px] md:w-[100px] text-right">30d</th>
+            <th className="px-3 py-3 w-[96px] md:w-[120px]">Status</th>
           </tr>
         </thead>
         <tbody>
           {snapshots.map((s, i) => (
             <tr key={s.siteId} className="border-b border-[var(--color-border)] last:border-b-0 hover:bg-[var(--color-paper-2)]">
-              <td className="px-5 py-4 text-[12px] font-mono font-semibold text-[var(--color-ink-faint)]">{String(i+1).padStart(2,'0')}</td>
-              <td className="px-3 py-4">
-                <a href={`/sites/${s.siteId}`} className="block">
-                  <div className="font-semibold text-[var(--color-ink)] tracking-tight">{s.name}</div>
-                  <div className="text-[11.5px] text-[var(--color-ink-faint)] mt-0.5 font-medium">{s.url.replace(/^https?:\/\//, '')}</div>
+              <td className="hidden md:table-cell px-5 py-4 text-[12px] font-mono font-semibold text-[var(--color-ink-faint)]">{String(i+1).padStart(2,'0')}</td>
+              <td className="px-3 py-4 min-w-0">
+                <a href={`/sites/${s.siteId}`} className="block min-w-0">
+                  <div className="font-semibold text-[var(--color-ink)] tracking-tight truncate">{s.name}</div>
+                  <div className="text-[11.5px] text-[var(--color-ink-faint)] mt-0.5 font-medium truncate">{s.url.replace(/^https?:\/\//, '')}</div>
+                  <div className="md:hidden mt-2">
+                    <Sparkline buckets={s.last24h} />
+                  </div>
                 </a>
               </td>
-              <td className="px-3 py-4">
+              <td className="hidden md:table-cell px-3 py-4">
                 <Sparkline buckets={s.last24h} />
               </td>
               <td className="px-3 py-4 text-right">
-                <span className="text-lg font-bold tabular-nums" style={{ color: STATE_COLOR[s.currentState] }}>
+                <span className="text-base md:text-lg font-bold tabular-nums" style={{ color: STATE_COLOR[s.currentState] }}>
                   {s.uptime30dPct === null ? '—' : Math.round(s.uptime30dPct)}
                   <sup className="text-xs ml-px text-[var(--color-ink-faint)]">%</sup>
                 </span>
               </td>
               <td className="px-3 py-4">
-                <span className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-[0.1em]"
+                <span className="inline-flex items-center gap-1.5 text-[11px] md:text-xs font-bold uppercase tracking-[0.08em] md:tracking-[0.1em]"
                       style={{ color: STATE_COLOR[s.currentState] }}>
-                  <span className="w-2 h-2 rounded-full" style={{ background: STATE_COLOR[s.currentState], boxShadow: `0 0 0 3px ${STATE_SOFT[s.currentState]}` }} />
+                  <span className="w-2 h-2 rounded-full shrink-0" style={{ background: STATE_COLOR[s.currentState], boxShadow: `0 0 0 3px ${STATE_SOFT[s.currentState]}` }} />
                   {STATE_LABEL[s.currentState]}
                 </span>
               </td>

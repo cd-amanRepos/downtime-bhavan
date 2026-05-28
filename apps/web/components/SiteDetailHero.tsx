@@ -24,18 +24,18 @@ export function SiteDetailHero({ snapshot: s }: Props) {
   const now = Date.now();
   const color = STATE_COLOR[s.currentState];
   return (
-    <div className="border border-[var(--color-border)] rounded-2xl p-8 bg-[var(--color-paper)] mb-8">
-      <div className="flex items-baseline justify-between gap-6 mb-4">
-        <div>
+    <div className="border border-[var(--color-border)] rounded-2xl p-5 md:p-8 bg-[var(--color-paper)] mb-6 md:mb-8">
+      <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-3 sm:gap-6 mb-4">
+        <div className="min-w-0">
           <span className="block text-[10.5px] font-semibold uppercase tracking-[0.18em] text-[var(--color-ink-faint)] mb-1">
             <a href="/departments" className="hover:text-[var(--color-blue)]">← All departments</a>
           </span>
-          <h1 className="text-3xl font-bold tracking-tight">{s.name}</h1>
-          <a href={s.url} target="_blank" rel="noopener noreferrer" className="inline-block text-sm text-[var(--color-blue)] underline mt-1.5">
+          <h1 className="text-2xl md:text-3xl font-bold tracking-tight break-words">{s.name}</h1>
+          <a href={s.url} target="_blank" rel="noopener noreferrer" className="inline-block text-sm text-[var(--color-blue)] underline mt-1.5 break-all">
             {s.url} ↗
           </a>
         </div>
-        <div className="text-right">
+        <div className="sm:text-right shrink-0">
           <span className="inline-flex items-center gap-2 text-sm font-bold uppercase tracking-[0.1em]" style={{ color }}>
             <span className="w-2.5 h-2.5 rounded-full" style={{ background: color, boxShadow: `0 0 0 4px ${color}33` }} />
             {STATE_LABEL[s.currentState]}
@@ -44,7 +44,7 @@ export function SiteDetailHero({ snapshot: s }: Props) {
         </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-6 mt-6 pt-6 border-t border-[var(--color-border)]">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 sm:gap-6 mt-5 pt-5 sm:mt-6 sm:pt-6 border-t border-[var(--color-border)]">
         <Stat label="30-day uptime" value={s.uptime30dPct === null ? '—' : `${Math.round(s.uptime30dPct)}%`} color={color} />
         <Stat label="Last check" value={`${duration(now - s.lastCheckAt)} ago`} color="var(--color-ink)" />
         <Stat label="Community flag" value={s.communityFlag ? 'YES (≥20 reports/10m)' : '—'} color={s.communityFlag ? 'var(--color-amber)' : 'var(--color-ink-faint)'} />
