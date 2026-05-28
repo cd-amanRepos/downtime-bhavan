@@ -1,5 +1,6 @@
 import { createDb, type Db } from '@dtb/db';
 import { resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 let _db: Db | null = null;
 
@@ -7,12 +8,17 @@ let _db: Db | null = null;
  *  monitor writes to. WAL mode in createDb() makes concurrent reads safe. */
 export function getDb(): Db {
   if (!_db) {
-    // Resolve path lazily so import.meta.dirname is available at call time
-    // (not at module evaluation time, which fails during Next.js static analysis).
-    // apps/web/lib/db.ts → climb 3 levels to repo root (same pattern as
-    // migrate.ts, seed-cli.ts, monitor/index.ts).
-    const repoRoot = resolve(import.meta.dirname, '..', '..', '..');
-    const dbPath = process.env.DTB_DB_PATH ?? resolve(repoRoot, 'data', 'dtb.sqlite');
+    let dbPath: string;
+    if (process.env.DTB_DB_PATH) {
+      dbPath = process.env.DTB_DB_PATH;
+    } else {
+      // import.meta.dirname is undefined under Next.js webpack, but
+      // import.meta.url works. This file lives at apps/web/lib/db.ts →
+      // climb 4 levels up (lib → web → apps → repo-root) to find data/.
+      const thisFile = fileURLToPath(import.meta.url);
+      const repoRoot = resolve(thisFile, '..', '..', '..', '..');
+      dbPath = resolve(repoRoot, 'data', 'dtb.sqlite');
+    }
     _db = createDb(dbPath);
   }
   return _db;
