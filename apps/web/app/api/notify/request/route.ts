@@ -15,12 +15,49 @@ const OTP_TTL_MS = 10 * 60 * 1000;
 const MAX_OTPS_PER_PHONE_PER_HOUR = 3;
 
 export async function POST(req: Request) {
-  let body: { phone: string; siteId: string };
+  let body: { phone: string; siteId?: string; purpose?: 'notify_signup' | 'delete_data' };
   try { body = await req.json(); }
   catch { return NextResponse.json({ error: 'invalid_json' }, { status: 400 }); }
 
   const phone = normalizeIndianPhone(body.phone);
   if (!phone) return NextResponse.json({ error: 'invalid_phone' }, { status: 400 });
+
+  const purpose = body.purpose ?? 'notify_signup';
+
+  // delete_data branch: skip site validation and subscription creation
+  if (purpose === 'delete_data') {
+    const db = getDb();
+    const ipHash = getClientIpHash(req.headers);
+    const phoneHash = hashPhone(phone);
+
+    const rl = checkRateLimit(db, ipHash, 'grievance:submit');
+    if (!rl.allowed) return NextResponse.json({ error: 'rate_limited' }, { status: 429 });
+
+    const hourAgo = Date.now() - 60 * 60_000;
+    const recentOtps = db.select({ n: count() }).from(schema.otpAttempts)
+      .where(and(eq(schema.otpAttempts.phoneHash, phoneHash), gte(schema.otpAttempts.createdAt, hourAgo)))
+      .get()?.n ?? 0;
+    if (recentOtps >= MAX_OTPS_PER_PHONE_PER_HOUR) {
+      return NextResponse.json({ error: 'too_many_otps' }, { status: 429 });
+    }
+
+    const otp = generateOtp();
+    const codeHash = hashOtp(otp);
+    const now = Date.now();
+
+    db.insert(schema.otpAttempts).values({
+      phoneHash, codeHash, purpose: 'delete_data',
+      expiresAt: now + OTP_TTL_MS, used: false, ipHash, createdAt: now,
+    }).run();
+
+    const adapter = await getAdapter();
+    const sent = await adapter.sendOtp({ toE164: phone, otp });
+    if (!sent.ok) return NextResponse.json({ error: 'send_failed', detail: sent.error }, { status: 502 });
+
+    return NextResponse.json({ ok: true, maskedPhone: maskForResponse(phone) });
+  }
+
+  // notify_signup branch (default)
   if (!body.siteId) return NextResponse.json({ error: 'invalid_site' }, { status: 400 });
 
   const db = getDb();
