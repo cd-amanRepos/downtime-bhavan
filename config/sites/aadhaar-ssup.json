@@ -1,0 +1,12 @@
+{
+  "id": "aadhaar-ssup",
+  "name": "Aadhaar Self-Service Portal",
+  "url": "https://uidai.gov.in/ssup",
+  "selectors": {
+    "mustExist": ["input[type='text']"],
+    "mustNotExist": ["text=Service temporarily unavailable"]
+  },
+  "checkpointRegion": "mumbai",
+  "headlessTimeoutMs": 20000,
+  "enabled": true
+}
