@@ -16,8 +16,21 @@ export const BRAND_TAGLINE = 'An unofficial observatory';
 export const ORG_LEGAL_NOTE =
   'Independent civic project. Not affiliated with the Government of India or any government body.';
 
-export const SOCIAL_X = 'https://x.com/downtimebhavan';
-export const SOCIAL_GITHUB = 'https://github.com/downtimebhavan';
+/**
+ * Brand social handles. No separate Downtime Bhavan accounts exist yet —
+ * leave empty until they're claimed. Schema builders filter empty strings
+ * out of `sameAs` arrays, so emitted JSON-LD stays clean.
+ */
+export const SOCIAL_X = '';
+export const SOCIAL_GITHUB = '';
+
+/**
+ * Operator personal social URLs — used by the /about Person schema's
+ * `sameAs` to establish the human-behind-the-site E-E-A-T signal.
+ */
+export const OPERATOR_LINKEDIN = 'https://www.linkedin.com/in/amanthapliyal3';
+export const OPERATOR_GITHUB = '';
+export const OPERATOR_X = '';
 
 /**
  * Wikidata QID URL — left empty until the Wikidata entity is created.
@@ -31,8 +44,7 @@ export const LOCALE = 'en-IN';
 export const COUNTRY = 'IN';
 
 /**
- * Provisional operator placeholder — the named human behind the observatory.
- * Replace with the real operator's name before the /about page goes public
- * with a real human.
+ * The named human behind the observatory. Renders in the /about page body
+ * and in the Person JSON-LD schema (E-E-A-T signal).
  */
-export const OPERATOR_NAME = 'Downtime Bhavan team';
+export const OPERATOR_NAME = 'Aman Thapliyal';

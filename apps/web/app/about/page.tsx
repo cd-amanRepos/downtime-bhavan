@@ -7,10 +7,11 @@ import {
   buildPersonSchema,
 } from '@/lib/seo/schema';
 import {
+  OPERATOR_GITHUB,
+  OPERATOR_LINKEDIN,
   OPERATOR_NAME,
+  OPERATOR_X,
   SITE_URL,
-  SOCIAL_GITHUB,
-  SOCIAL_X,
 } from '@/lib/seo/constants';
 
 export const metadata = buildMetadata({
@@ -21,7 +22,9 @@ export const metadata = buildMetadata({
 });
 
 export default function Page() {
-  const personSameAs = [SOCIAL_X, SOCIAL_GITHUB].filter((s) => s.length > 0);
+  const personSameAs = [OPERATOR_LINKEDIN, OPERATOR_GITHUB, OPERATOR_X].filter(
+    (s) => s.length > 0,
+  );
 
   return (
     <PageShell active="status" maxWidth={760}>
@@ -76,28 +79,19 @@ export default function Page() {
 
       <Section title="Who runs this">
         <p className="mb-3">
-          Downtime Bhavan is built and maintained by the{' '}
-          <b className="text-[var(--color-ink)]">{OPERATOR_NAME}</b> — a small group
-          of civic-minded engineers based in India. We work on this in our spare
-          time. If you want to help, see the GitHub repository or get in touch.
+          Downtime Bhavan is built and maintained by{' '}
+          <b className="text-[var(--color-ink)]">{OPERATOR_NAME}</b>, a
+          civic-minded engineer based in India. This runs in spare time. If
+          you want to help, get in touch.
         </p>
         <p>
           <a
-            href={SOCIAL_GITHUB}
+            href={OPERATOR_LINKEDIN}
             className="text-[var(--color-blue)] underline"
             rel="noopener noreferrer"
             target="_blank"
           >
-            GitHub repository
-          </a>
-          {' · '}
-          <a
-            href={SOCIAL_X}
-            className="text-[var(--color-blue)] underline"
-            rel="noopener noreferrer"
-            target="_blank"
-          >
-            X / Twitter
+            LinkedIn
           </a>
         </p>
       </Section>
