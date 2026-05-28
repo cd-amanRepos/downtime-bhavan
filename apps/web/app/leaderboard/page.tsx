@@ -3,9 +3,21 @@ import { eq, count } from 'drizzle-orm';
 import { schema } from '@dtb/db';
 import { getDb } from '@/lib/db';
 import { rankSites, type LeaderboardInput } from '@/lib/leaderboard';
+import { buildMetadata } from '@/lib/seo/metadata';
+import { JsonLd } from '@/components/JsonLd';
+import {
+  buildBreadcrumbSchema,
+  buildDatasetSchema,
+  buildItemListSchema,
+} from '@/lib/seo/schema';
+import { SITE_URL } from '@/lib/seo/constants';
 
 export const dynamic = 'force-dynamic';
-export const metadata = { title: 'Leaderboard · Downtime Bhavan' };
+export const metadata = buildMetadata({
+  title: 'Indian government website uptime · 30-day leaderboard',
+  description: 'Ranked 30-day uptime of the Indian government websites tracked by Downtime Bhavan. Updated continuously from an Indian VPS.',
+  path: '/leaderboard',
+});
 
 function fmtHours(ms: number): string {
   const h = Math.floor(ms / (60 * 60 * 1000));
@@ -38,8 +50,28 @@ export default async function Page() {
 
   const ranked = rankSites(inputs);
 
+  const jsonLd: object[] = [
+    buildBreadcrumbSchema([
+      { name: 'Home', url: SITE_URL },
+      { name: 'Leaderboard', url: `${SITE_URL}/leaderboard` },
+    ]),
+    buildDatasetSchema({
+      name: 'Indian government website uptime — 30 day rolling',
+      description:
+        'Ranked 30-day uptime for the Indian government websites tracked by Downtime Bhavan.',
+      url: `${SITE_URL}/leaderboard`,
+    }),
+    buildItemListSchema({
+      items: ranked.map((r) => ({
+        url: `${SITE_URL}/sites/${r.siteId}`,
+        name: r.name,
+      })),
+    }),
+  ];
+
   return (
     <PageShell active="leaderboard">
+      <JsonLd data={jsonLd} />
       <div className="text-center mb-10">
         <span className="block text-[10.5px] font-semibold uppercase tracking-[0.18em] text-[var(--color-saffron)] mb-2">
           Awards Ceremony · {new Date().toLocaleDateString('en-IN', { month: 'long', year: 'numeric' })}

@@ -3,9 +3,20 @@ import { GrievanceListPage } from '@/components/GrievanceListPage';
 import { eq, desc, and, gte } from 'drizzle-orm';
 import { schema } from '@dtb/db';
 import { getDb } from '@/lib/db';
+import { buildMetadata } from '@/lib/seo/metadata';
+import { JsonLd } from '@/components/JsonLd';
+import {
+  buildBreadcrumbSchema,
+  buildItemListSchema,
+} from '@/lib/seo/schema';
+import { SITE_URL } from '@/lib/seo/constants';
 
 export const dynamic = 'force-dynamic';
-export const metadata = { title: 'Janta Darbar · Downtime Bhavan' };
+export const metadata = buildMetadata({
+  title: 'Janta Darbar · citizen grievances against Indian government websites',
+  description: "Live citizen grievances against India's government portals — tagged, time-stamped, and anonymous. The public-pulse layer of Downtime Bhavan.",
+  path: '/janta-darbar',
+});
 
 export default async function Page() {
   const db = getDb();
@@ -33,8 +44,22 @@ export default async function Page() {
   }));
   const siteLookup = sites.map((s) => ({ id: s.id, name: s.name, state: stateById.get(s.id) }));
 
+  const jsonLd: object[] = [
+    buildBreadcrumbSchema([
+      { name: 'Home', url: SITE_URL },
+      { name: 'Janta Darbar', url: `${SITE_URL}/janta-darbar` },
+    ]),
+    buildItemListSchema({
+      items: recent.slice(0, 10).map((g) => ({
+        url: `${SITE_URL}/sites/${g.siteId}`,
+        name: `${g.tag} — ${g.body.slice(0, 60)}`,
+      })),
+    }),
+  ];
+
   return (
     <PageShell active="janta-darbar">
+      <JsonLd data={jsonLd} />
       <div className="mb-8">
         <span className="block text-[10.5px] font-semibold uppercase tracking-[0.18em] text-[var(--color-ink-faint)] mb-1">
           {initial.length} grievances · Last 24 hours

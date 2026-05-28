@@ -10,7 +10,7 @@ import { SITE_URL } from '@/lib/seo/constants';
 
 export const metadata = buildMetadata({
   title: 'Donate · keep the unofficial observatory free for citizens',
-  description: 'Downtime Bhavan runs on donations. UPI for Indian donors. Funds keep WhatsApp alerts free as the subscriber base grows.',
+  description: 'Downtime Bhavan runs on donations. UPI for Indian donors. Covers the server, domain, and email sender. No ads, no sponsors.',
   path: '/donate',
 });
 

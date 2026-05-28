@@ -7,6 +7,8 @@ export function PageFooter() {
         <b className="text-[var(--color-ink-soft)] font-bold">Downtime Bhavan</b> · Not affiliated with any government body · Data from Mumbai · Refreshed every 2 min
       </div>
       <div className="flex gap-4.5">
+        <a href="/about"       className="hover:text-[var(--color-blue)]">About</a>
+        <a href="/sites"       className="hover:text-[var(--color-blue)]">Sites</a>
         <a href="/methodology" className="hover:text-[var(--color-blue)]">Methodology</a>
         <a href="/api"         className="hover:text-[var(--color-blue)]">API</a>
         <a href="/press"       className="hover:text-[var(--color-blue)]">Press</a>

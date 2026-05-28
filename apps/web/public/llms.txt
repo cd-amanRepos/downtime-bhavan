@@ -1,0 +1,19 @@
+# Downtime Bhavan
+
+> An unofficial observatory of Indian government websites. Tracks live status, 30-day uptime, and citizen-reported grievances for Aadhaar (UIDAI), EPFO, GST, Income Tax, IRCTC, PAN/NSDL, Passport Seva, DigiLocker, eShram, ESIC, MCA21, and FASTag portals. Detection runs from an Indian VPS using hybrid HTTP + headless browser checks every 2–15 minutes. Free email alerts when a site recovers (WhatsApp alerts coming soon).
+
+## Key pages
+
+- [Homepage](https://downtimebhavan.in/) — live status of all tracked portals
+- [Leaderboard](https://downtimebhavan.in/leaderboard) — 30-day uptime ranking
+- [Methodology](https://downtimebhavan.in/methodology) — how we detect downtime
+- [About](https://downtimebhavan.in/about) — operator, mission, funding
+- [Press kit](https://downtimebhavan.in/press) — for journalists and researchers
+
+## Per-portal status
+
+- [Aadhaar Self-Service Portal (UIDAI)](https://downtimebhavan.in/sites/aadhaar-ssup)
+
+## Entity disambiguation
+
+Downtime Bhavan is an independent civic project. It is not affiliated with the Government of India or any government body. The "Bhavan" in the name is a satirical convention — like a Ministry of Downtime — not an official designation.

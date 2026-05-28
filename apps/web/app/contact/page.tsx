@@ -1,6 +1,11 @@
 import { PageShell } from '@/components/PageShell';
+import { buildMetadata } from '@/lib/seo/metadata';
 
-export const metadata = { title: 'Contact · Downtime Bhavan' };
+export const metadata = buildMetadata({
+  title: 'Contact',
+  description: 'Contact the unofficial observatory of Indian government websites.',
+  path: '/contact',
+});
 
 export default function Page() {
   return (

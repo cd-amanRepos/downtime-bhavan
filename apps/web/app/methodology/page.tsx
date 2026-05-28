@@ -1,10 +1,35 @@
 import { PageShell } from '@/components/PageShell';
+import { buildMetadata } from '@/lib/seo/metadata';
+import { JsonLd } from '@/components/JsonLd';
+import {
+  buildArticleSchema,
+  buildBreadcrumbSchema,
+} from '@/lib/seo/schema';
+import { SITE_URL } from '@/lib/seo/constants';
 
-export const metadata = { title: 'Methodology · Downtime Bhavan' };
+export const metadata = buildMetadata({
+  title: 'Methodology · how Downtime Bhavan detects government website downtime',
+  description: 'Hybrid HTTP and headless browser checks from an Indian VPS. Definitions of Working, Degraded, and Down. False-positive policy and detection cadence.',
+  path: '/methodology',
+});
+
+const jsonLd: object[] = [
+  buildBreadcrumbSchema([
+    { name: 'Home', url: SITE_URL },
+    { name: 'Methodology', url: `${SITE_URL}/methodology` },
+  ]),
+  buildArticleSchema({
+    headline: 'How Downtime Bhavan detects government website downtime',
+    url: `${SITE_URL}/methodology`,
+    datePublished: '2026-05-28T00:00:00+05:30',
+    dateModified: '2026-05-29T00:00:00+05:30',
+  }),
+];
 
 export default function Page() {
   return (
     <PageShell active="methodology">
+      <JsonLd data={jsonLd} />
       <h1 className="text-3xl font-bold tracking-tight mb-2">How we know if a site is down.</h1>
       <p className="text-[var(--color-ink-dim)] mb-10">
         Our methodology, in 4 paragraphs. No black boxes.

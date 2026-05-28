@@ -1,6 +1,11 @@
 import { PageShell } from '@/components/PageShell';
+import { buildMetadata } from '@/lib/seo/metadata';
 
-export const metadata = { title: 'Press · Downtime Bhavan' };
+export const metadata = buildMetadata({
+  title: 'Press kit · Downtime Bhavan brand assets and data for journalists',
+  description: 'Brand assets, sample data, and contact details for journalists, researchers, and civic-tech reporters covering Indian government website reliability.',
+  path: '/press',
+});
 
 export default function Page() {
   return (

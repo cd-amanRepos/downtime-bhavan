@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { eq, desc, gte, and } from 'drizzle-orm';
 import { PageShell } from '@/components/PageShell';
@@ -7,13 +8,36 @@ import { schema } from '@dtb/db';
 import { getDb } from '@/lib/db';
 import { buildLast24h } from '@/lib/status-derive';
 import { GrievancePost } from '@/components/GrievancePost';
+import { buildMetadata } from '@/lib/seo/metadata';
+import { JsonLd } from '@/components/JsonLd';
+import { buildBreadcrumbSchema, buildDatasetSchema } from '@/lib/seo/schema';
+import { SITE_URL } from '@/lib/seo/constants';
 import type { SiteStatusSnapshot } from '@dtb/shared';
 
 export const dynamic = 'force-dynamic';
 
-export async function generateMetadata({ params }: { params: Promise<{ siteId: string }> }) {
+export async function generateMetadata({ params }: { params: Promise<{ siteId: string }> }): Promise<Metadata> {
   const { siteId } = await params;
-  return { title: `${siteId} · Downtime Bhavan` };
+  const db = getDb();
+  const site = db.select({ name: schema.sites.name }).from(schema.sites).where(eq(schema.sites.id, siteId)).get();
+  if (!site) {
+    return buildMetadata({
+      title: 'Site not found',
+      description: "This portal is not in Downtime Bhavan's tracked list.",
+      path: `/sites/${siteId}`,
+      noindex: true,
+    });
+  }
+  // Length-bound the title fragment. With "· Downtime Bhavan" suffix (~18 chars),
+  // we want the fragment ≤ 48 chars so the rendered title stays ≤ 66 chars.
+  const longFragment = `${site.name} status · is ${site.name} down right now?`;
+  const titleFragment = longFragment.length <= 48 ? longFragment : `${site.name} status`;
+  return buildMetadata({
+    title: titleFragment,
+    description: `Live status, 30-day uptime, and recent citizen grievances for ${site.name}. Free email alert when it recovers.`,
+    path: `/sites/${siteId}`,
+    type: 'website',
+  });
 }
 
 export default async function Page({ params }: { params: Promise<{ siteId: string }> }) {
@@ -59,8 +83,30 @@ export default async function Page({ params }: { params: Promise<{ siteId: strin
     m[r.kind] = (m[r.kind] ?? 0) + 1;
   }
 
+  const jsonLd: object[] = [
+    buildBreadcrumbSchema([
+      { name: 'Home', url: SITE_URL },
+      { name: 'Sites', url: `${SITE_URL}/sites` },
+      { name: site.name, url: `${SITE_URL}/sites/${site.id}` },
+    ]),
+    {
+      '@context': 'https://schema.org',
+      '@type': 'Service',
+      name: site.name,
+      url: site.url,
+      serviceType: 'Government online service',
+      provider: { '@type': 'GovernmentOrganization', name: site.name },
+    },
+    buildDatasetSchema({
+      name: `${site.name} uptime — 30 day rolling`,
+      description: `30-day rolling uptime percentage for ${site.name} as measured by Downtime Bhavan from an Indian VPS.`,
+      url: `${SITE_URL}/sites/${site.id}`,
+    }),
+  ];
+
   return (
     <PageShell active="status">
+      <JsonLd data={jsonLd} />
       <SiteDetailHero snapshot={snapshot} />
       <SiteDetailHistory checks={checks} />
 

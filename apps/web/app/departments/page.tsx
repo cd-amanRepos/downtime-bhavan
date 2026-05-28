@@ -1,8 +1,13 @@
 import { PageShell } from '@/components/PageShell';
 import { SiteTable } from '@/components/SiteTable';
+import { buildMetadata } from '@/lib/seo/metadata';
 
 export const dynamic = 'force-dynamic';
-export const metadata = { title: 'Departments · Downtime Bhavan' };
+export const metadata = buildMetadata({
+  title: 'Departments · Indian government websites grouped by ministry',
+  description: 'Browse tracked Indian government websites grouped by department. Live status and 30-day uptime per portal.',
+  path: '/departments',
+});
 
 export default async function Page() {
   return (

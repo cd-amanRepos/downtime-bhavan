@@ -1,6 +1,11 @@
 import { PageShell } from '@/components/PageShell';
+import { buildMetadata } from '@/lib/seo/metadata';
 
-export const metadata = { title: 'Privacy · Downtime Bhavan' };
+export const metadata = buildMetadata({
+  title: 'Privacy policy',
+  description: 'How Downtime Bhavan handles your data. Email addresses used only for alert delivery. No tracking, no third-party ads.',
+  path: '/privacy',
+});
 
 export default function Page() {
   return (

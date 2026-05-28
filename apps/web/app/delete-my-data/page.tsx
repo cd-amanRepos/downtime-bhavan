@@ -1,7 +1,13 @@
 import { PageShell } from '@/components/PageShell';
 import { DeleteFlowTrigger } from '@/components/DeleteFlowTrigger';
+import { buildMetadata } from '@/lib/seo/metadata';
 
-export const metadata = { title: 'Delete my data · Downtime Bhavan' };
+export const metadata = buildMetadata({
+  title: 'Delete my data',
+  description: 'Remove your phone number and alert preferences from Downtime Bhavan.',
+  path: '/delete-my-data',
+  noindex: true,
+});
 
 export default function Page() {
   return (
