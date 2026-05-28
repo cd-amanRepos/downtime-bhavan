@@ -126,3 +126,23 @@ test('admin: wrong token shows error, right token enters', async ({ page }) => {
   await page.getByRole('button', { name: /Enter/i }).click();
   await expect(page.getByRole('heading', { name: /Overview/ })).toBeVisible({ timeout: 5_000 });
 });
+
+test('notify: request OTP in DryRun mode returns ok + maskedPhone', async ({ request }) => {
+  const r = await request.post('http://localhost:3210/api/notify/request', {
+    data: { phone: '9876543210', siteId: 'aadhaar-ssup' },
+  });
+  expect(r.status()).toBe(200);
+  const data = await r.json();
+  expect(data.ok).toBe(true);
+  expect(data.maskedPhone).toMatch(/^\+91 98•••/);
+});
+
+test('notify: verify with wrong OTP fails 403', async ({ request }) => {
+  await request.post('http://localhost:3210/api/notify/request', {
+    data: { phone: '9876543211', siteId: 'aadhaar-ssup' },
+  });
+  const r = await request.post('http://localhost:3210/api/notify/verify', {
+    data: { phone: '9876543211', otp: '000000' },
+  });
+  expect(r.status()).toBe(403);
+});
