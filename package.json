@@ -1,6 +1,6 @@
 {
   "name": "downtime-bhavan",
-  "version": "0.3.0-link-pages",
+  "version": "0.4.0-admin",
   "private": true,
   "type": "module",
   "workspaces": [
