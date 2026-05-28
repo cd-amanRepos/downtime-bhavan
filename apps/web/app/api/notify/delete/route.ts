@@ -3,32 +3,59 @@ import { eq, and, desc, gt } from 'drizzle-orm';
 import { schema } from '@dtb/db';
 import { getDb } from '@/lib/db';
 import { normalizeIndianPhone, hashPhone } from '@/lib/phone';
+import { normalizeEmail, hashEmail } from '@/lib/email';
 import { hashOtp } from '@/lib/otp';
 
 export const dynamic = 'force-dynamic';
 
 export async function POST(req: Request) {
-  let body: { phone: string; otp: string };
+  let body: {
+    contact?: string;
+    phone?: string;
+    otp: string;
+    kind?: 'email' | 'whatsapp';
+  };
   try { body = await req.json(); }
   catch { return NextResponse.json({ error: 'invalid_json' }, { status: 400 }); }
 
-  const phone = normalizeIndianPhone(body.phone);
-  if (!phone) return NextResponse.json({ error: 'invalid_phone' }, { status: 400 });
+  // Backward compat: old clients sent { phone, ... } — treat as WhatsApp
+  let contact = body.contact;
+  let kind: 'email' | 'whatsapp' = body.kind ?? 'email';
+  if (!contact && body.phone) {
+    contact = body.phone;
+    kind = 'whatsapp';
+  }
+
+  if (!contact) return NextResponse.json({ error: 'invalid_contact' }, { status: 400 });
   if (!body.otp || !/^\d{6}$/.test(body.otp)) {
     return NextResponse.json({ error: 'invalid_otp' }, { status: 400 });
   }
 
-  const phoneHash = hashPhone(phone);
+  // Validate and normalize contact by kind
+  let contactHash: string;
+
+  if (kind === 'email') {
+    const email = normalizeEmail(contact);
+    if (!email) return NextResponse.json({ error: 'invalid_email' }, { status: 400 });
+    contactHash = hashEmail(email);
+  } else {
+    // whatsapp
+    const phone = normalizeIndianPhone(contact);
+    if (!phone) return NextResponse.json({ error: 'invalid_phone' }, { status: 400 });
+    contactHash = hashPhone(phone);
+  }
+
   const codeHash = hashOtp(body.otp);
   const db = getDb();
   const now = Date.now();
 
-  // Verify OTP with purpose='delete_data'
+  // Verify OTP with purpose='delete_data' and matching kind
   const otp = db.select().from(schema.otpAttempts)
     .where(and(
-      eq(schema.otpAttempts.phoneHash, phoneHash),
+      eq(schema.otpAttempts.phoneHash, contactHash),
       eq(schema.otpAttempts.codeHash, codeHash),
       eq(schema.otpAttempts.purpose, 'delete_data'),
+      eq(schema.otpAttempts.kind, kind),
       eq(schema.otpAttempts.used, false),
       gt(schema.otpAttempts.expiresAt, now),
     ))
@@ -43,13 +70,13 @@ export async function POST(req: Request) {
   // Purge subscriptions: set status='deleted', clear phone ciphertext
   const result = db.update(schema.subscriptions)
     .set({ status: 'deleted', phoneCiphertext: null })
-    .where(eq(schema.subscriptions.phoneHash, phoneHash))
+    .where(eq(schema.subscriptions.phoneHash, contactHash))
     .run();
 
   const purged = result.changes ?? 0;
 
-  // Delete all OTP attempts for this phone (purge OTP history)
-  db.delete(schema.otpAttempts).where(eq(schema.otpAttempts.phoneHash, phoneHash)).run();
+  // Delete all OTP attempts for this contact (purge OTP history)
+  db.delete(schema.otpAttempts).where(eq(schema.otpAttempts.phoneHash, contactHash)).run();
 
   return NextResponse.json({ ok: true, purged });
 }

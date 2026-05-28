@@ -2,25 +2,59 @@ import { NextResponse } from 'next/server';
 import { eq, gte, and, count } from 'drizzle-orm';
 import { schema } from '@dtb/db';
 import { getDb } from '@/lib/db';
-import { normalizeIndianPhone, hashPhone } from '@/lib/phone';
+import { normalizeIndianPhone, hashPhone, maskPhone } from '@/lib/phone';
+import { normalizeEmail, hashEmail, maskEmail } from '@/lib/email';
 import { generateOtp, hashOtp } from '@/lib/otp';
 import { getClientIpHash } from '@/lib/ip';
 import { checkRateLimit } from '@/lib/rate-limit';
-import { getAdapter } from '@/lib/whatsapp-adapter';
+import { getNotifyAdapter } from '@/lib/notify-adapter';
 import { countActiveByPhone, MAX_ACTIVE_PER_PHONE } from '@/lib/subscription';
 
 export const dynamic = 'force-dynamic';
 
 const OTP_TTL_MS = 10 * 60 * 1000;
-const MAX_OTPS_PER_PHONE_PER_HOUR = 3;
+const MAX_OTPS_PER_CONTACT_PER_HOUR = 3;
 
 export async function POST(req: Request) {
-  let body: { phone: string; siteId?: string; purpose?: 'notify_signup' | 'delete_data' };
+  let body: {
+    contact?: string;
+    phone?: string;
+    siteId?: string;
+    kind?: 'email' | 'whatsapp';
+    purpose?: 'notify_signup' | 'delete_data';
+  };
   try { body = await req.json(); }
   catch { return NextResponse.json({ error: 'invalid_json' }, { status: 400 }); }
 
-  const phone = normalizeIndianPhone(body.phone);
-  if (!phone) return NextResponse.json({ error: 'invalid_phone' }, { status: 400 });
+  // Backward compat: old clients sent { phone, ... } — treat as WhatsApp
+  let contact = body.contact;
+  let kind: 'email' | 'whatsapp' = body.kind ?? 'email';
+  if (!contact && body.phone) {
+    contact = body.phone;
+    kind = 'whatsapp';
+  }
+
+  if (!contact) return NextResponse.json({ error: 'invalid_contact' }, { status: 400 });
+
+  // Validate and normalize contact by kind
+  let normalizedContact: string;
+  let contactHash: string;
+  let maskedContact: string;
+
+  if (kind === 'email') {
+    const email = normalizeEmail(contact);
+    if (!email) return NextResponse.json({ error: 'invalid_email' }, { status: 400 });
+    normalizedContact = email;
+    contactHash = hashEmail(email);
+    maskedContact = maskEmail(email);
+  } else {
+    // whatsapp
+    const phone = normalizeIndianPhone(contact);
+    if (!phone) return NextResponse.json({ error: 'invalid_phone' }, { status: 400 });
+    normalizedContact = phone;
+    contactHash = hashPhone(phone);
+    maskedContact = maskPhone(phone);
+  }
 
   const purpose = body.purpose ?? 'notify_signup';
 
@@ -28,16 +62,15 @@ export async function POST(req: Request) {
   if (purpose === 'delete_data') {
     const db = getDb();
     const ipHash = getClientIpHash(req.headers);
-    const phoneHash = hashPhone(phone);
 
     const rl = checkRateLimit(db, ipHash, 'grievance:submit');
     if (!rl.allowed) return NextResponse.json({ error: 'rate_limited' }, { status: 429 });
 
     const hourAgo = Date.now() - 60 * 60_000;
     const recentOtps = db.select({ n: count() }).from(schema.otpAttempts)
-      .where(and(eq(schema.otpAttempts.phoneHash, phoneHash), gte(schema.otpAttempts.createdAt, hourAgo)))
+      .where(and(eq(schema.otpAttempts.phoneHash, contactHash), gte(schema.otpAttempts.createdAt, hourAgo)))
       .get()?.n ?? 0;
-    if (recentOtps >= MAX_OTPS_PER_PHONE_PER_HOUR) {
+    if (recentOtps >= MAX_OTPS_PER_CONTACT_PER_HOUR) {
       return NextResponse.json({ error: 'too_many_otps' }, { status: 429 });
     }
 
@@ -46,15 +79,15 @@ export async function POST(req: Request) {
     const now = Date.now();
 
     db.insert(schema.otpAttempts).values({
-      phoneHash, codeHash, purpose: 'delete_data',
+      phoneHash: contactHash, codeHash, purpose: 'delete_data', kind,
       expiresAt: now + OTP_TTL_MS, used: false, ipHash, createdAt: now,
     }).run();
 
-    const adapter = await getAdapter();
-    const sent = await adapter.sendOtp({ toE164: phone, otp });
+    const adapter = await getNotifyAdapter(kind);
+    const sent = await adapter.sendOtp({ to: normalizedContact, otp, kind });
     if (!sent.ok) return NextResponse.json({ error: 'send_failed', detail: sent.error }, { status: 502 });
 
-    return NextResponse.json({ ok: true, maskedPhone: maskForResponse(phone) });
+    return NextResponse.json({ ok: true, maskedContact, kind });
   }
 
   // notify_signup branch (default)
@@ -65,22 +98,21 @@ export async function POST(req: Request) {
   if (!site || !site.enabled) return NextResponse.json({ error: 'site_not_tracked' }, { status: 400 });
 
   const ipHash = getClientIpHash(req.headers);
-  const phoneHash = hashPhone(phone);
 
-  // Rate limit by IP (system-wide abuse) AND by phone (OTP spam to a number)
+  // Rate limit by IP (system-wide abuse) AND by contact (OTP spam to a contact)
   const rl = checkRateLimit(db, ipHash, 'grievance:submit'); // reuse existing limit for now
   if (!rl.allowed) return NextResponse.json({ error: 'rate_limited' }, { status: 429 });
 
   const hourAgo = Date.now() - 60 * 60_000;
   const recentOtps = db.select({ n: count() }).from(schema.otpAttempts)
-    .where(and(eq(schema.otpAttempts.phoneHash, phoneHash), gte(schema.otpAttempts.createdAt, hourAgo)))
+    .where(and(eq(schema.otpAttempts.phoneHash, contactHash), gte(schema.otpAttempts.createdAt, hourAgo)))
     .get()?.n ?? 0;
-  if (recentOtps >= MAX_OTPS_PER_PHONE_PER_HOUR) {
+  if (recentOtps >= MAX_OTPS_PER_CONTACT_PER_HOUR) {
     return NextResponse.json({ error: 'too_many_otps' }, { status: 429 });
   }
 
   // Cap active alerts
-  if (countActiveByPhone(db, phoneHash) >= MAX_ACTIVE_PER_PHONE) {
+  if (countActiveByPhone(db, contactHash) >= MAX_ACTIVE_PER_PHONE) {
     return NextResponse.json({ error: 'max_alerts_reached', max: MAX_ACTIVE_PER_PHONE }, { status: 409 });
   }
 
@@ -89,26 +121,20 @@ export async function POST(req: Request) {
   const now = Date.now();
 
   db.insert(schema.otpAttempts).values({
-    phoneHash, codeHash, purpose: 'notify_signup',
+    phoneHash: contactHash, codeHash, purpose: 'notify_signup', kind,
     expiresAt: now + OTP_TTL_MS, used: false, ipHash, createdAt: now,
   }).run();
 
   // Also store a pending subscription so verify can find which site we wanted
   db.insert(schema.subscriptions).values({
-    siteId: body.siteId, phoneHash, phoneCiphertext: null /* we encrypt at verify */,
-    status: 'pending_otp', createdAt: now,
+    siteId: body.siteId, phoneHash: contactHash, phoneCiphertext: null /* we encrypt at verify */,
+    status: 'pending_otp', kind, createdAt: now,
   }).run();
 
-  const adapter = await getAdapter();
-  const sent = await adapter.sendOtp({ toE164: phone, otp });
+  const adapter = await getNotifyAdapter(kind);
+  const sent = await adapter.sendOtp({ to: normalizedContact, otp, kind });
   if (!sent.ok) return NextResponse.json({ error: 'send_failed', detail: sent.error }, { status: 502 });
 
-  // Return masked phone so the modal can display it
-  return NextResponse.json({ ok: true, maskedPhone: maskForResponse(phone) });
-}
-
-function maskForResponse(e164: string): string {
-  const m = e164.match(/^\+91(\d{2})\d{5}(\d{3})$/);
-  if (!m) return e164;
-  return `+91 ${m[1]}••• ••${m[2]}`;
+  // Return masked contact so the modal can display it
+  return NextResponse.json({ ok: true, maskedContact, kind });
 }
