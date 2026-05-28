@@ -1,17 +1,41 @@
-const POSTS = [
-  { site: 'Aadhaar', state: 'degraded', tag: 'otp-not-coming', body: 'tried 6 times. office wala bola "kal aana"', time: '12s ago', reactions: { angry: 24, same: 89 } },
-  { site: 'GST',     state: 'down',     tag: 'error-5xx',      body: 'my CA is crying. filing deadline Friday.',  time: '34s ago', reactions: { sad: 156, same: 412 } },
-  { site: 'EPFO',    state: 'down',     tag: 'blank-page',     body: '23 hours of darkness. epfo we miss you.',    time: '1m ago',  reactions: { laugh: 87, same: 203 } },
-] as const;
+import { eq, desc, and, gte } from 'drizzle-orm';
+import { schema } from '@dtb/db';
+import { getDb } from '@/lib/db';
+import { GrievanceStream } from './GrievanceStream.js';
 
-const DOT_COLOR: Record<string, string> = { down: 'var(--color-red)', degraded: 'var(--color-amber)', working: 'var(--color-green)' };
+export async function JantaDarbarPanel() {
+  const db = getDb();
+  const sites = db.select().from(schema.sites).where(eq(schema.sites.enabled, true)).all();
+  const since = Date.now() - 60 * 60 * 1000;
 
-export function JantaDarbarPanel() {
+  const recent = db.select().from(schema.grievances)
+    .where(and(eq(schema.grievances.visible, true), gte(schema.grievances.createdAt, since)))
+    .orderBy(desc(schema.grievances.createdAt))
+    .limit(40)
+    .all();
+
+  const reactions = db.select().from(schema.reactions).all();
+  const counts: Record<number, Record<string, number>> = {};
+  for (const r of reactions) {
+    const m = counts[r.grievanceId] ?? (counts[r.grievanceId] = {});
+    m[r.kind] = (m[r.kind] ?? 0) + 1;
+  }
+
+  // also need each site's current state for the colored dot
+  const statuses = db.select().from(schema.siteStatus).all();
+  const stateById = new Map(statuses.map((s) => [s.siteId, s.currentState] as const));
+
+  const initial = recent.map((g) => ({
+    id: g.id, siteId: g.siteId, tag: g.tag, body: g.body, createdAt: g.createdAt,
+    reactions: counts[g.id] ?? {},
+  }));
+  const siteLookup = sites.map((s) => ({ id: s.id, name: s.name, state: stateById.get(s.id) }));
+
   return (
     <section className="col col-side bg-[var(--color-paper)] border-r-0">
       <div className="px-7 pt-6 pb-4 border-b border-[var(--color-border)]">
         <span className="block text-[10.5px] font-semibold text-[var(--color-ink-faint)] tracking-[0.18em] uppercase">
-          Coming in Plan 4 · Live grievances
+          {initial.length} in last 60 min · Live grievances
         </span>
         <h2 className="mt-1 text-lg font-bold tracking-tight flex items-baseline gap-2.5">
           Janta Darbar
@@ -20,30 +44,10 @@ export function JantaDarbarPanel() {
         <span className="text-xs text-[var(--color-ink-dim)] mt-0.5">The people's court of broken portals</span>
       </div>
 
-      <div>
-        {POSTS.map((p, i) => (
-          <article key={i} className="px-7 py-4 border-b border-[var(--color-border)] cursor-pointer hover:bg-[var(--color-paper-2)] transition-colors">
-            <div className="flex items-center justify-between mb-2">
-              <span className="inline-flex items-center gap-1.5 text-xs font-bold">
-                <span className="w-1.5 h-1.5 rounded-full" style={{ background: DOT_COLOR[p.state] }} />
-                {p.site}
-                <span className="text-[var(--color-ink-faint)] font-medium text-[11px] ml-1">· {p.tag}</span>
-              </span>
-              <span className="text-[11px] text-[var(--color-ink-faint)] font-medium">{p.time}</span>
-            </div>
-            <div className="text-sm font-medium leading-snug">{p.body}</div>
-          </article>
-        ))}
-      </div>
+      <GrievanceStream initial={initial} sites={siteLookup} />
 
-      <div className="sticky bottom-0 bg-[var(--color-paper)] border-t border-[var(--color-border)] px-7 py-3.5 text-center">
-        <button className="bg-[var(--color-blue)] text-white border-0 px-4.5 py-3.5 rounded-[11px] text-[13px] font-bold w-full inline-flex items-center justify-center gap-2.5 shadow-[0_4px_12px_-4px_rgba(30,58,138,0.4),_inset_0_1px_0_rgba(255,255,255,0.15)] hover:bg-[var(--color-blue-deep)] transition-all" disabled>
-          + File a grievance
-          <span className="bg-white/20 text-white px-1.5 py-0.5 rounded-full text-[10.5px] font-bold tracking-wide ml-1">coming soon</span>
-        </button>
-        <div className="mt-2 text-[11px] text-[var(--color-ink-faint)] font-medium">
-          <span className="text-[var(--color-ink-soft)] font-semibold" style={{ fontFamily: 'var(--font-hi)' }}>शिकायत दर्ज करें</span> · live in Plan 4
-        </div>
+      <div className="px-7 py-3 text-center text-[11.5px] text-[var(--color-blue)] font-semibold cursor-pointer bg-[var(--color-paper-2)] border-t border-[var(--color-border)] hover:bg-[var(--color-blue-soft)]">
+        <a href="/janta-darbar">View all grievances →</a>
       </div>
     </section>
   );
