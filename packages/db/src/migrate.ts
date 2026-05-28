@@ -3,7 +3,9 @@ import { createDb } from './client.js';
 import { mkdirSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 
-const dbPath = process.env.DTB_DB_PATH ?? resolve('data', 'dtb.sqlite');
+// packages/db/src/migrate.ts → climb up 3 levels to repo root
+const repoRoot = resolve(import.meta.dirname, '..', '..', '..');
+const dbPath = process.env.DTB_DB_PATH ?? resolve(repoRoot, 'data', 'dtb.sqlite');
 mkdirSync(dirname(dbPath), { recursive: true });
 
 const db = createDb(dbPath);
