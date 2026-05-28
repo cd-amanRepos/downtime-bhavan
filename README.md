@@ -2,8 +2,8 @@
 
 An unofficial public observatory of India's most-used government websites.
 
-**Status:** under development (V1 walking skeleton in progress)
-**Live:** not yet
+**Status:** Live at https://downtimebhavan.in
+**Live:** https://downtimebhavan.in
 **Design spec:** [docs/superpowers/specs/2026-05-28-downtime-bhavan-design.md](docs/superpowers/specs/2026-05-28-downtime-bhavan-design.md)
 
 ## Local development
