@@ -20,7 +20,10 @@ const TAGS = [
   { value: 'other',          label: 'Other' },
 ] as const;
 
-const SITEKEY = process.env.NEXT_PUBLIC_TURNSTILE_SITEKEY ?? '1x00000000000000000000AA';
+// Cloudflare Turnstile sitekey. The default below is Cloudflare's invisible
+// always-pass test key — no visible widget, no "for testing only" banner.
+// Swap to a real sitekey via env when ready: dash.cloudflare.com → Turnstile.
+const SITEKEY = process.env.NEXT_PUBLIC_TURNSTILE_SITEKEY ?? '3x00000000000000000000FF';
 
 declare global {
   interface Window {
