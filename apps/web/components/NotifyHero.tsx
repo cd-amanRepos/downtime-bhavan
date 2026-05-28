@@ -22,27 +22,26 @@ export function NotifyHero({ sites }: Props) {
 
   return (
     <section className="col center relative bg-[var(--color-bg)] flex flex-col overflow-hidden">
-      {/* Watermark: slow-rotating Ashoka-chakra-inspired pattern behind the
-          hero text. 6% opacity, 240s rotation — reads as ambient texture
-          rather than animation noise. Centered via an outer div so the SVG's
-          own transform stays clean for the spin. */}
+      {/* Watermark: oversized saffron Ashoka-chakra-inspired emblem behind the
+          hero text. Static (no rotation), low opacity so the navy text sits
+          cleanly on top. Acts as a soft brand backdrop rather than decoration. */}
       <div
         aria-hidden
-        className="pointer-events-none absolute top-12 left-1/2 -translate-x-1/2 w-[540px] h-[540px] opacity-[0.07] z-0"
+        className="pointer-events-none absolute -top-24 left-1/2 -translate-x-1/2 w-[900px] h-[900px] opacity-[0.10] z-0"
       >
         <svg
           viewBox="0 0 100 100"
           fill="none"
-          stroke="var(--color-blue)"
-          strokeWidth="0.2"
-          className="w-full h-full animate-spin"
-          style={{ animationDuration: '240s' }}
+          stroke="var(--color-saffron)"
+          strokeWidth="0.6"
+          className="w-full h-full"
         >
-          <circle cx="50" cy="50" r="46" />
-          <circle cx="50" cy="50" r="3" fill="var(--color-blue)" />
-          {/* 24 spokes at 15° intervals */}
+          <circle cx="50" cy="50" r="46" strokeWidth="1" />
+          <circle cx="50" cy="50" r="40" />
+          <circle cx="50" cy="50" r="3" fill="var(--color-saffron)" />
+          {/* 24 spokes at 15° intervals, radiating from center to inner ring */}
           {[0, 15, 30, 45, 60, 75, 90, 105, 120, 135, 150, 165, 180, 195, 210, 225, 240, 255, 270, 285, 300, 315, 330, 345].map((a) => (
-            <line key={a} x1="50" y1="4" x2="50" y2="20" transform={`rotate(${a} 50 50)`} />
+            <line key={a} x1="50" y1="10" x2="50" y2="40" transform={`rotate(${a} 50 50)`} />
           ))}
         </svg>
       </div>
