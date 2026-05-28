@@ -1,5 +1,5 @@
-import { describe, it, expect, beforeEach } from 'vitest';
-import { countActiveByPhone, MAX_ACTIVE_PER_PHONE } from './subscription.js';
+import { describe, it, expect } from 'vitest';
+import { countActiveByPhone } from './subscription.js';
 import { createDb, schema } from '@dtb/db';
 import Database from 'better-sqlite3';
 import { mkdtempSync } from 'node:fs';
