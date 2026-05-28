@@ -25,9 +25,9 @@ export const checks = sqliteTable(
     checkedAt: integer('checked_at').notNull(),                // epoch ms
     layer: text('layer', { enum: ['http', 'headless'] }).notNull(),
     result: text('result', { enum: ['up', 'degraded', 'down'] }).notNull(),
-    httpStatus: integer('http_status'),
-    latencyMs: integer('latency_ms'),
-    failureReason: text('failure_reason'),
+    httpStatus: integer('http_status'), // null when the request never reached an HTTP response (network error, timeout)
+    latencyMs: integer('latency_ms'), // null when the request errored before measurement was meaningful
+    failureReason: text('failure_reason'), // null when result === 'up'
   },
   (t) => ({
     siteTimeIdx: index('idx_checks_site_time').on(t.siteId, t.checkedAt),
@@ -43,7 +43,7 @@ export const siteStatus = sqliteTable('site_status', {
   currentState: text('current_state', { enum: ['working', 'degraded', 'down'] })
     .notNull(),
   stateSince: integer('state_since').notNull(),
-  uptime30dPct: real('uptime_30d_pct'),
+  uptime30dPct: real('uptime_30d_pct'), // null until we have ≥5 samples in the last 30 days
   lastCheckAt: integer('last_check_at').notNull(),
   communityFlag: integer('community_flag', { mode: 'boolean' })
     .notNull()

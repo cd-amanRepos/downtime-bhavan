@@ -7,7 +7,10 @@ describe('schema', () => {
   it('can insert a site, a check, and a status row, then query them back', () => {
     const db = createDb(path);
 
-    // Bootstrap tables manually (we'll generate proper migrations next step)
+    // Bootstrap tables manually for this unit test — we don't want to depend
+    // on the migration runner here (that's covered by the migrate command).
+    // The `as any` cast is unavoidable: Drizzle doesn't publicly export the
+    // underlying better-sqlite3 handle, but we need it to run raw SQL setup.
     const sqlite = (db as any).$client as import('better-sqlite3').Database;
     sqlite.exec(`
       CREATE TABLE sites (id TEXT PRIMARY KEY, name TEXT, url TEXT, config_json TEXT, enabled INTEGER DEFAULT 1);
