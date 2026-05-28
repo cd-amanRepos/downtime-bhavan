@@ -1,6 +1,5 @@
 import Image from 'next/image';
-import logoHorizontal from '../public/logo-horizontal.png';
-import { AshokaMark } from './AshokaMark.js';
+import iconOnly from '../public/icon-only.png';
 
 type NavId = 'status' | 'janta-darbar' | 'leaderboard' | 'methodology' | 'api';
 
@@ -17,25 +16,25 @@ interface Props { active?: NavId; }
 export function PageHeader({ active = 'status' }: Props) {
   return (
     <header className="grid grid-cols-[1fr_auto_1fr] items-center gap-6 sticky top-0 z-50 px-7 py-3.5 bg-[var(--color-paper)] border-b border-[var(--color-border)]">
-      <a href="/" className="flex items-center no-underline text-inherit" aria-label="Downtime Bhavan home">
-        {/* Full horizontal logo on tablet/desktop — icon + wordmark + Hindi tagline are
-            all baked into the artwork. Hidden on small screens; falls back to the
-            compact AshokaMark + wordmark stack so the header stays single-line. */}
-        <div className="hidden sm:block">
-          <Image
-            src={logoHorizontal}
-            alt="Downtime Bhavan · An unofficial observatory"
-            height={40}
-            priority
-            className="h-10 w-auto"
-          />
-        </div>
-        <div className="flex sm:hidden items-center gap-3">
-          <div className="w-[38px] h-[38px] rounded-full bg-[var(--color-blue)] flex items-center justify-center text-white shadow-[inset_0_0_0_1px_rgba(255,255,255,0.1),0_1px_2px_rgba(15,31,95,0.18)]">
-            <AshokaMark size={28} />
-          </div>
+      <a href="/" className="flex items-center gap-3 no-underline text-inherit" aria-label="Downtime Bhavan home">
+        {/* Icon-only mark (the building + chakra + heartbeat + notification dot) +
+            HTML wordmark + tagline. Keeping the tagline as real text means it stays
+            sharp + readable at any DPI, scales with browser zoom, and gets picked up
+            by accessibility tools and search engines. */}
+        <Image
+          src={iconOnly}
+          alt=""
+          width={44}
+          height={44}
+          priority
+          className="w-11 h-11 shrink-0"
+        />
+        <div className="flex flex-col leading-tight">
           <span className="text-[17px] font-bold tracking-tight text-[var(--color-ink)]">
             Downtime <span className="text-[var(--color-blue)]">Bhavan</span>
+          </span>
+          <span className="text-xs font-medium text-[var(--color-ink-dim)] mt-0.5" style={{ fontFamily: 'var(--font-hi)' }}>
+            डाउनटाइम भवन · An unofficial observatory
           </span>
         </div>
       </a>
