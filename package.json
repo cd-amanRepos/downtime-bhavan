@@ -1,0 +1,32 @@
+{
+  "name": "downtime-bhavan",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "scripts": {
+    "build": "npm run -ws --if-present build",
+    "lint": "npm run -ws --if-present lint",
+    "typecheck": "npm run -ws --if-present typecheck",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:e2e": "playwright test",
+    "db:migrate": "npm run -w @dtb/db migrate",
+    "db:seed": "npm run -w @dtb/db seed",
+    "dev:web": "npm run -w @dtb/web dev",
+    "dev:monitor": "npm run -w @dtb/monitor dev",
+    "dev": "npm-run-all -p dev:web dev:monitor"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "npm-run-all": "^4.1.5",
+    "typescript": "^5.7.0",
+    "vitest": "^2.1.0"
+  }
+}

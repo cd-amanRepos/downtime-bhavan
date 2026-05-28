@@ -1,0 +1,27 @@
+node_modules/
+.next/
+dist/
+build/
+out/
+
+# Local DB & runtime
+*.sqlite
+*.sqlite-journal
+*.sqlite-wal
+*.sqlite-shm
+data/
+.env
+.env.local
+.env.production
+
+# Editor/OS
+.DS_Store
+.vscode/
+.idea/
+*.log
+coverage/
+.playwright-report/
+test-results/
+
+# Brainstorm artifacts
+.superpowers/
