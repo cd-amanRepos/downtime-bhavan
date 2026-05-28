@@ -22,6 +22,31 @@ export function NotifyHero({ sites }: Props) {
 
   return (
     <section className="col center relative bg-[var(--color-bg)] flex flex-col overflow-hidden">
+      {/* Watermark: slow-rotating Ashoka-chakra-inspired pattern behind the
+          hero text. 6% opacity, 240s rotation — reads as ambient texture
+          rather than animation noise. Centered via an outer div so the SVG's
+          own transform stays clean for the spin. */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute top-12 left-1/2 -translate-x-1/2 w-[540px] h-[540px] opacity-[0.07] z-0"
+      >
+        <svg
+          viewBox="0 0 100 100"
+          fill="none"
+          stroke="var(--color-blue)"
+          strokeWidth="0.2"
+          className="w-full h-full animate-spin"
+          style={{ animationDuration: '240s' }}
+        >
+          <circle cx="50" cy="50" r="46" />
+          <circle cx="50" cy="50" r="3" fill="var(--color-blue)" />
+          {/* 24 spokes at 15° intervals */}
+          {[0, 15, 30, 45, 60, 75, 90, 105, 120, 135, 150, 165, 180, 195, 210, 225, 240, 255, 270, 285, 300, 315, 330, 345].map((a) => (
+            <line key={a} x1="50" y1="4" x2="50" y2="20" transform={`rotate(${a} 50 50)`} />
+          ))}
+        </svg>
+      </div>
+
       <div className="max-w-[760px] mx-auto px-14 pt-20 pb-16 text-center relative z-10">
         <div className="inline-flex items-center gap-2.5 text-xs font-semibold text-[var(--color-ink-dim)] mb-6">
           <span className="w-7 h-px bg-[var(--color-border-strong)]" />
