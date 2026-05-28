@@ -31,6 +31,7 @@ function makeDb() {
       site_id TEXT NOT NULL,
       phone_hash TEXT NOT NULL,
       phone_ciphertext TEXT,
+      kind TEXT NOT NULL DEFAULT 'email',
       status TEXT NOT NULL DEFAULT 'pending_otp',
       created_at INTEGER NOT NULL,
       activated_at INTEGER,
@@ -83,11 +84,12 @@ describe('dispatchRecoveryAlerts', () => {
 
     const ciphertext = encryptPhone('+919876543210');
 
-    // Insert an active subscription with an encrypted phone
+    // Insert an active subscription with an encrypted phone (WhatsApp kind)
     db.insert(schema.subscriptions).values({
       siteId: 'aadhaar-ssup',
       phoneHash: 'hash123',
       phoneCiphertext: ciphertext,
+      kind: 'whatsapp',
       status: 'active',
       createdAt: Date.now(),
     }).run();
@@ -101,7 +103,7 @@ describe('dispatchRecoveryAlerts', () => {
     expect(subs[0]?.triggeredAt).toBeTypeOf('number');
   });
 
-  it('flips status to failed when phone_ciphertext is null', async () => {
+  it('skips (does not mutate) a subscription when phone_ciphertext is null', async () => {
     const db = makeDb();
 
     db.insert(schema.sites).values({
@@ -117,16 +119,17 @@ describe('dispatchRecoveryAlerts', () => {
       siteId: 'passport-seva',
       phoneHash: 'hash456',
       phoneCiphertext: null,
+      kind: 'whatsapp',
       status: 'active',
       createdAt: Date.now(),
     }).run();
 
     await dispatchRecoveryAlerts(db, ['passport-seva']);
 
+    // New dispatcher skips null-ciphertext subs silently — status stays unchanged
     const subs = db.select().from(schema.subscriptions).all();
     expect(subs).toHaveLength(1);
-    expect(subs[0]?.status).toBe('failed');
-    // ciphertext was already null, stays null
+    expect(subs[0]?.status).toBe('active');
     expect(subs[0]?.phoneCiphertext).toBeNull();
   });
 });

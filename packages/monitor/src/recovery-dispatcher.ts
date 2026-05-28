@@ -1,6 +1,7 @@
 import { eq, and } from 'drizzle-orm';
 import { schema, type Db } from '@dtb/db';
 import { sendRecoveryMessage } from './whatsapp-send.js';
+import { sendRecoveryEmail } from './email-send.js';
 import { createDecipheriv } from 'node:crypto';
 
 const ENC_KEY = (() => {
@@ -44,24 +45,18 @@ export async function dispatchRecoveryAlerts(
       .all();
 
     for (const sub of subs) {
-      if (!sub.phoneCiphertext) {
-        db.update(schema.subscriptions)
-          .set({ status: 'failed' })
-          .where(eq(schema.subscriptions.id, sub.id))
-          .run();
+      if (!sub.phoneCiphertext) continue;
+      const contact = decryptPhone(sub.phoneCiphertext);
+      if (!contact) {
+        db.update(schema.subscriptions).set({ status: 'failed' }).where(eq(schema.subscriptions.id, sub.id)).run();
         continue;
       }
-
-      const phone = decryptPhone(sub.phoneCiphertext);
-      if (!phone) {
-        db.update(schema.subscriptions)
-          .set({ status: 'failed' })
-          .where(eq(schema.subscriptions.id, sub.id))
-          .run();
-        continue;
+      let res: { ok: boolean; error?: string };
+      if (sub.kind === 'email') {
+        res = await sendRecoveryEmail(contact, site.name, site.url);
+      } else {
+        res = await sendRecoveryMessage(contact, site.name, site.url);
       }
-
-      const res = await sendRecoveryMessage(phone, site.name, site.url);
       if (res.ok) {
         db.update(schema.subscriptions)
           .set({
