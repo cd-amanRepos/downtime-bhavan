@@ -16,11 +16,10 @@ interface Props { active?: NavId; }
 export function PageHeader({ active = 'status' }: Props) {
   return (
     <header className="grid grid-cols-[1fr_auto_1fr] items-center gap-6 sticky top-0 z-50 px-7 py-3.5 bg-[var(--color-paper)] border-b border-[var(--color-border)]">
-      <a href="/" className="flex items-center gap-3 no-underline text-inherit" aria-label="Downtime Bhavan home">
-        {/* Icon-only mark (the building + chakra + heartbeat + notification dot) +
-            HTML wordmark + tagline. Keeping the tagline as real text means it stays
-            sharp + readable at any DPI, scales with browser zoom, and gets picked up
-            by accessibility tools and search engines. */}
+      <a href="/" className="flex items-center gap-2.5 no-underline text-inherit" aria-label="Downtime Bhavan home">
+        {/* Icon-only mark + HTML wordmark + tagline. Icon PNG is trimmed to its
+            content bbox (no internal whitespace) so 56px display ≈ 56px visible
+            artwork — pairs visually with the 17px wordmark + 12px tagline stack. */}
         <Image
           src={iconOnly}
           alt=""
