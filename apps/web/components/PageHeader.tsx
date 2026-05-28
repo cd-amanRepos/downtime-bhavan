@@ -24,10 +24,10 @@ export function PageHeader({ active = 'status' }: Props) {
         <Image
           src={iconOnly}
           alt=""
-          width={44}
-          height={44}
+          width={56}
+          height={56}
           priority
-          className="w-11 h-11 shrink-0"
+          className="w-14 h-14 shrink-0"
         />
         <div className="flex flex-col leading-tight">
           <span className="text-[17px] font-bold tracking-tight text-[var(--color-ink)]">
