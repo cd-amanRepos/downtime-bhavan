@@ -1,6 +1,6 @@
 {
   "name": "downtime-bhavan",
-  "version": "0.0.1",
+  "version": "0.1.0-walking-skeleton",
   "private": true,
   "type": "module",
   "workspaces": [
