@@ -1,6 +1,10 @@
 import type { SiteState } from '@dtb/shared';
 
-const HOUR = 60 * 60 * 1000;
+/** 30-minute buckets. 24 buckets = 12-hour window.
+ *  Picked over 1-hour buckets so fresh installs see bars filling in within
+ *  the first hour instead of staring at an empty chart for 24 hours. */
+const BUCKET_MS = 30 * 60 * 1000;
+const BUCKET_COUNT = 24;
 
 export interface BucketInput {
   checkedAt: number;
@@ -12,17 +16,18 @@ export interface HourBucket {
   state: SiteState | 'unknown';
 }
 
-/** Turn a list of recent checks into exactly 24 hourly buckets,
- *  oldest first, ending at `now`. Worst result wins per hour. */
+/** Turn a list of recent checks into exactly 24 buckets, oldest first,
+ *  ending at `now`. Each bucket spans 30 minutes; the array covers the
+ *  last 12 hours. Worst result wins per bucket. */
 export function buildLast24h(checks: BucketInput[], now: number): HourBucket[] {
   const buckets: HourBucket[] = [];
-  for (let i = 23; i >= 0; i--) {
-    buckets.push({ hourStart: now - (i + 1) * HOUR, state: 'unknown' });
+  for (let i = BUCKET_COUNT - 1; i >= 0; i--) {
+    buckets.push({ hourStart: now - (i + 1) * BUCKET_MS, state: 'unknown' });
   }
 
   for (const c of checks) {
-    const idx = 24 - 1 - Math.floor((now - c.checkedAt) / HOUR);
-    if (idx < 0 || idx > 23) continue;
+    const idx = BUCKET_COUNT - 1 - Math.floor((now - c.checkedAt) / BUCKET_MS);
+    if (idx < 0 || idx > BUCKET_COUNT - 1) continue;
     buckets[idx]!.state = worstOf(buckets[idx]!.state, c.result);
   }
 
