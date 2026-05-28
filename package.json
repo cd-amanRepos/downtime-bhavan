@@ -1,6 +1,6 @@
 {
   "name": "downtime-bhavan",
-  "version": "1.1.0-email",
+  "version": "1.2.0-twelve-sites",
   "private": true,
   "type": "module",
   "workspaces": [
